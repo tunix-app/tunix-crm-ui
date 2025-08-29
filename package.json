@@ -14,25 +14,15 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
     "lucide-react": "^0.441.0",
-    "next": "latest",
-    "next/font/google": "latest",
-    "@/components/theme-provider": "latest",
-    "@/components/Layout/Sidebar": "latest",
-    "@/components/Layout/Header": "latest",
-    "@/components/Dashboard/Dashboard": "latest",
-    "@/components/Clients/ClientsPage": "latest",
-    "@/components/Calendar/CalendarPage": "latest",
-    "@/components/ProgramBuilder/ProgramBuilderPage": "latest",
-    "@/components/Analytics/ClientAnalyticsPage": "latest",
-    "@/components/Settings/SettingsPage": "latest",
-    "@radix-ui/react-slot": "latest",
-    "class-variance-authority": "latest",
-    "@radix-ui/react-tabs": "latest",
-    "@radix-ui/react-dialog": "latest",
-    "next-themes": "latest",
-    "next-themes/dist/types": "latest",
-    "clsx": "latest",
-    "tailwind-merge": "latest"
+    "next": "14.2.4",
+    "@radix-ui/react-slot": "1.0.2",
+    "class-variance-authority": "0.7.0",
+    "@radix-ui/react-tabs": "1.0.4",
+    "@radix-ui/react-dialog": "1.1.15",
+    "next-themes": "0.2.0",
+    "clsx": "2.1.0",
+    "tailwind-merge": "2.2.1",
+    "tailwindcss-animate": "1.0.7"
   },
   "devDependencies": {
     "@types/node": "^20.11.18",
@@ -47,7 +37,7 @@
     "typescript": "^5.5.4",
     "vite": "^5.2.0",
     "tailwindcss": "3.4.17",
-    "autoprefixer": "latest",
-    "postcss": "latest"
+    "autoprefixer": "10.4.16",
+    "postcss": "8.4.31"
   }
 }
