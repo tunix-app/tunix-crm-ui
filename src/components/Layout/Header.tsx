@@ -97,9 +97,9 @@ const Header = ({
                 </div>
                 <div className="max-h-96 overflow-y-auto">
                   {notifications.length > 0 ? <div className="divide-y divide-gray-200">
-                      {notifications.map(notification => <div key={notification.id} className={`p-4 hover:bg-gray-50 ${notification.read ? '' : 'bg-blue-50'}`}>
+                      {notifications.map(notification => <div key={notification.id} className={`p-4 hover:bg-gray-50 ${notification.read ? '' : 'bg-tan-50'}`}>
                           <div className="flex items-start">
-                            <div className={`rounded-full p-2 mr-3 ${notification.type === 'schedule' ? 'bg-blue-100' : notification.type === 'client' ? 'bg-green-100' : notification.type === 'program' ? 'bg-purple-100' : 'bg-gray-100'}`}>
+                            <div className={`rounded-full p-2 mr-3 ${notification.type === 'schedule' ? 'bg-tan-100' : notification.type === 'client' ? 'bg-green-100' : notification.type === 'program' ? 'bg-purple-100' : 'bg-gray-100'}`}>
                               {notification.type === 'schedule' ? <CalendarPlus size={16} className="text-blue-600" /> : notification.type === 'client' ? <UserPlus size={16} className="text-green-600" /> : notification.type === 'program' ? <Dumbbell size={16} className="text-purple-600" /> : <Bell size={16} className="text-gray-600" />}
                             </div>
                             <div className="flex-1 min-w-0">

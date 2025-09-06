@@ -12,7 +12,7 @@ const buttonVariants = cva('inline-flex items-center justify-center whitespace-n
       ghost: 'hover:bg-accent hover:text-accent-foreground',
       link: 'text-primary underline-offset-4 hover:underline',
       amber: 'bg-amber-600 text-white hover:bg-amber-700',
-      blue: 'bg-blue-600 text-white hover:bg-blue-700'
+      blue: 'bg-tan-600 text-white hover:bg-tan-700'
     },
     size: {
       default: 'h-10 px-4 py-2',

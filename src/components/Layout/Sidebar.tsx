@@ -53,7 +53,7 @@ const Sidebar = ({
   }];
   return <div className={`${sidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300 bg-gray-900 text-white flex flex-col`}>
       <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
-        {sidebarOpen ? <h1 className="text-xl font-bold">GetJahBodyRight</h1> : <h1 className="text-xl font-bold">GJB</h1>}
+        {sidebarOpen ? <h1 className="text-xl font-bold">GJBR</h1> : <h1 className="text-xl font-bold">GJB</h1>}
         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1 rounded-md hover:bg-gray-800">
           {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
         </button>
@@ -61,7 +61,7 @@ const Sidebar = ({
       <div className="flex-1 py-4">
         <ul className="space-y-2">
           {navItems.map(item => <li key={item.name}>
-              <Link to={item.path} className={cn('flex items-center px-4 py-3 rounded-md transition-colors', pathname === item.path ? 'bg-blue-600' : 'hover:bg-gray-800', sidebarOpen ? 'justify-start' : 'justify-center', 'relative')}>
+              <Link to={item.path} className={cn('flex items-center px-4 py-3 rounded-md transition-colors', pathname === item.path ? 'bg-tan-600' : 'hover:bg-gray-800', sidebarOpen ? 'justify-start' : 'justify-center', 'relative')}>
                 <span className="flex-shrink-0">{item.icon}</span>
                 {sidebarOpen && <span className="ml-3">{item.name}</span>}
                 {/* Notification indicator */}
@@ -80,11 +80,11 @@ const Sidebar = ({
       </div>
       <div className="p-4 border-t border-gray-800">
         <div className="flex items-center">
-          <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-            <span className="font-medium text-sm">JD</span>
+          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+            <span className="font-medium text-sm">JS</span>
           </div>
           {sidebarOpen && <div className="ml-3">
-              <p className="text-sm font-medium">John Doe</p>
+              <p className="text-sm font-medium">Jahneil Schuster</p>
               <p className="text-xs text-gray-400">Head Trainer</p>
             </div>}
         </div>

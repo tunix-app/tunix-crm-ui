@@ -127,7 +127,7 @@ const CalendarView = ({
                 const heightPercentage = durationMinutes / 60 * 100;
                 // Calculate top position based on minutes
                 const topPercentage = startMinute / 60 * 100;
-                return <div key={event.id} className={`absolute left-16 right-4 p-2 rounded-md cursor-pointer ${event.type === 'strength' ? 'bg-blue-100 border-l-4 border-blue-500' : event.type === 'mobility' ? 'bg-green-100 border-l-4 border-green-500' : event.type === 'rehab' ? 'bg-yellow-100 border-l-4 border-yellow-500' : 'bg-purple-100 border-l-4 border-purple-500'}`} style={{
+                return <div key={event.id} className={`absolute left-16 right-4 p-2 rounded-md cursor-pointer ${event.type === 'strength' ? 'bg-tan-100 border-l-4 border-blue-500' : event.type === 'mobility' ? 'bg-green-100 border-l-4 border-green-500' : event.type === 'rehab' ? 'bg-yellow-100 border-l-4 border-yellow-500' : 'bg-purple-100 border-l-4 border-purple-500'}`} style={{
                   top: `${topPercentage}%`,
                   height: `${heightPercentage}%`,
                   maxHeight: '95%'
@@ -161,7 +161,7 @@ const CalendarView = ({
                     weekday: 'short'
                   })}
                     </div>
-                    <div className={`text-2xl font-semibold mt-1 w-10 h-10 flex items-center justify-center rounded-full ${date.toDateString() === new Date().toDateString() ? 'bg-blue-600 text-white' : ''}`}>
+                    <div className={`text-2xl font-semibold mt-1 w-10 h-10 flex items-center justify-center rounded-full ${date.toDateString() === new Date().toDateString() ? 'bg-tan-600 text-white' : ''}`}>
                       {date.getDate()}
                     </div>
                   </div>
@@ -181,7 +181,7 @@ const CalendarView = ({
                   const heightPercentage = durationMinutes / 60 * 100;
                   // Calculate top position based on minutes
                   const topPercentage = startMinute / 60 * 100;
-                  return <div key={event.id} className={`absolute left-0 right-0 mx-1 p-1 rounded-sm text-xs cursor-pointer ${event.type === 'strength' ? 'bg-blue-100 border-l-2 border-blue-500' : event.type === 'mobility' ? 'bg-green-100 border-l-2 border-green-500' : event.type === 'rehab' ? 'bg-yellow-100 border-l-2 border-yellow-500' : 'bg-purple-100 border-l-2 border-purple-500'}`} style={{
+                  return <div key={event.id} className={`absolute left-0 right-0 mx-1 p-1 rounded-sm text-xs cursor-pointer ${event.type === 'strength' ? 'bg-tan-100 border-l-2 border-blue-500' : event.type === 'mobility' ? 'bg-green-100 border-l-2 border-green-500' : event.type === 'rehab' ? 'bg-yellow-100 border-l-2 border-yellow-500' : 'bg-purple-100 border-l-2 border-purple-500'}`} style={{
                     top: `${topPercentage}%`,
                     height: `${heightPercentage}%`,
                     maxHeight: '95%'
@@ -207,13 +207,13 @@ const CalendarView = ({
               {monthDays.map((day, index) => <div key={index} className={`bg-white p-2 h-32 ${!day.currentMonth ? 'text-gray-400' : ''} ${day.currentMonth && day.date === new Date().getDate() && currentDate.getMonth() === new Date().getMonth() ? 'ring-2 ring-inset ring-blue-500' : ''}`}>
                   <div className="flex justify-between">
                     <span className="text-sm font-medium">{day.date}</span>
-                    {day.currentMonth && day.date === 15 && <span className="text-xs bg-blue-100 text-blue-800 px-1.5 rounded-full">
+                    {day.currentMonth && day.date === 15 && <span className="text-xs bg-tan-100 text-blue-800 px-1.5 rounded-full">
                         3
                       </span>}
                   </div>
                   {/* Show sample events on a few days */}
                   {day.currentMonth && [5, 12, 15, 20].includes(day.date) && <div className="mt-2 space-y-1">
-                      {(day.date === 15 ? events.slice(0, 3) : events.slice(0, 1)).map(event => <div key={event.id} className={`text-xs p-1 rounded truncate ${event.type === 'strength' ? 'bg-blue-100 text-blue-800' : event.type === 'mobility' ? 'bg-green-100 text-green-800' : event.type === 'rehab' ? 'bg-yellow-100 text-yellow-800' : 'bg-purple-100 text-purple-800'}`}>
+                      {(day.date === 15 ? events.slice(0, 3) : events.slice(0, 1)).map(event => <div key={event.id} className={`text-xs p-1 rounded truncate ${event.type === 'strength' ? 'bg-tan-100 text-blue-800' : event.type === 'mobility' ? 'bg-green-100 text-green-800' : event.type === 'rehab' ? 'bg-yellow-100 text-yellow-800' : 'bg-purple-100 text-purple-800'}`}>
                           {event.start} {event.title}
                         </div>)}
                     </div>}

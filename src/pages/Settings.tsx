@@ -1,15 +1,54 @@
-import React, { useState } from 'react';
-import { UserIcon, BellIcon, CreditCardIcon, LockIcon, GlobeIcon, PaletteIcon, SaveIcon, CheckIcon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { UserIcon, BellIcon, CreditCardIcon, LockIcon, GlobeIcon, PaletteIcon, SaveIcon, CheckIcon, PlusIcon } from 'lucide-react';
+import { userApi, ApiError } from '@/lib/api';
+
 const Settings = () => {
   const [activeTab, setActiveTab] = useState<'profile' | 'notifications' | 'billing' | 'security' | 'appearance'>('profile');
-  const [profileData, setProfileData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phone: '(555) 123-4567',
-    title: 'Head Trainer',
-    bio: 'Certified personal trainer with 8+ years of experience specializing in strength training and rehabilitation.'
+  const [userData, setUserData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    title: '',
+    bio: ''
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // You'll need to get the user ID from your auth system or context
+  // For now, I'm using a placeholder - replace this with actual user ID
+  const userId = "8922225c-931f-4c28-8cfe-84b22159acd8"; // Replace with actual user ID from auth context
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const user = await userApi.getUser(userId);
+        setUserData({
+          firstName: user.first_name || '',
+          lastName: user.last_name || '',
+          email: user.email || '',
+          phone: user.phone || '',
+          title: user.role|| '',
+          bio: user.bio || ''
+        });
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+        if (err instanceof ApiError) {
+          setError(`Failed to load user data: ${err.message}`);
+        } else {
+          setError('Failed to load user data. Please try again.');
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
   const [notificationSettings, setNotificationSettings] = useState({
     emailNotifications: true,
     pushNotifications: true,
@@ -28,10 +67,37 @@ const Settings = () => {
       name,
       value
     } = e.target;
-    setProfileData(prev => ({
+    setUserData(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleProfileSave = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const updatedUser = await userApi.updateUser(userId, userData);
+      setUserData({
+        firstName: updatedUser.firstName || '',
+        lastName: updatedUser.lastName || '',
+        email: updatedUser.email || '',
+        phone: updatedUser.phone || '',
+        title: updatedUser.title || '',
+        bio: updatedUser.bio || ''
+      });
+      // You could add a success toast/notification here
+      alert('Profile updated successfully!');
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      if (err instanceof ApiError) {
+        setError(`Failed to update profile: ${err.message}`);
+      } else {
+        setError('Failed to update profile. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
   const handleNotificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {
@@ -65,31 +131,31 @@ const Settings = () => {
           <nav className="p-4">
             <ul className="space-y-1">
               <li>
-                <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${activeTab === 'profile' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${activeTab === 'profile' ? 'bg-tan-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
                   <UserIcon size={18} className={`mr-3 ${activeTab === 'profile' ? 'text-blue-500' : 'text-gray-400'}`} />
                   <span>Profile</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => setActiveTab('notifications')} className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${activeTab === 'notifications' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('notifications')} className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${activeTab === 'notifications' ? 'bg-tan-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
                   <BellIcon size={18} className={`mr-3 ${activeTab === 'notifications' ? 'text-blue-500' : 'text-gray-400'}`} />
                   <span>Notifications</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => setActiveTab('billing')} className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${activeTab === 'billing' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('billing')} className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${activeTab === 'billing' ? 'bg-tan-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
                   <CreditCardIcon size={18} className={`mr-3 ${activeTab === 'billing' ? 'text-blue-500' : 'text-gray-400'}`} />
                   <span>Billing</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => setActiveTab('security')} className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${activeTab === 'security' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('security')} className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${activeTab === 'security' ? 'bg-tan-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
                   <LockIcon size={18} className={`mr-3 ${activeTab === 'security' ? 'text-blue-500' : 'text-gray-400'}`} />
                   <span>Security</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => setActiveTab('appearance')} className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${activeTab === 'appearance' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('appearance')} className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${activeTab === 'appearance' ? 'bg-tan-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
                   <PaletteIcon size={18} className={`mr-3 ${activeTab === 'appearance' ? 'text-blue-500' : 'text-gray-400'}`} />
                   <span>Appearance</span>
                 </button>
@@ -104,11 +170,10 @@ const Settings = () => {
                   Profile Information
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  Update your personal information and how it appears to
-                  clients.
+                  Update your personal information.
                 </p>
               </div>
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <div className="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                   <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Profile" className="h-full w-full object-cover" />
                 </div>
@@ -120,14 +185,14 @@ const Settings = () => {
                     JPG, GIF or PNG. 1MB max.
                   </p>
                 </div>
-              </div>
+              </div> UNCOMMENT FOR A LATER FETURE TO USE PROFILE PICTURES*/}
               <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                 <div className="sm:col-span-3">
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
                     First name
                   </label>
                   <div className="mt-1">
-                    <input type="text" name="firstName" id="firstName" value={profileData.firstName} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
+                    <input type="text" name="firstName" id="firstName" value={userData.firstName} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
                 <div className="sm:col-span-3">
@@ -135,7 +200,7 @@ const Settings = () => {
                     Last name
                   </label>
                   <div className="mt-1">
-                    <input type="text" name="lastName" id="lastName" value={profileData.lastName} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
+                    <input type="text" name="lastName" id="lastName" value={userData.lastName} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
                 <div className="sm:col-span-4">
@@ -143,7 +208,7 @@ const Settings = () => {
                     Email address
                   </label>
                   <div className="mt-1">
-                    <input type="email" name="email" id="email" value={profileData.email} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
+                    <input type="email" name="email" id="email" value={userData.email} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
                 <div className="sm:col-span-3">
@@ -151,7 +216,7 @@ const Settings = () => {
                     Phone number
                   </label>
                   <div className="mt-1">
-                    <input type="text" name="phone" id="phone" value={profileData.phone} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
+                    <input type="text" name="phone" id="phone" value={userData.phone} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
                 <div className="sm:col-span-3">
@@ -159,7 +224,7 @@ const Settings = () => {
                     Job title
                   </label>
                   <div className="mt-1">
-                    <input type="text" name="title" id="title" value={profileData.title} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
+                    <input type="text" name="title" id="title" value={userData.title} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
                 <div className="sm:col-span-6">
@@ -167,19 +232,15 @@ const Settings = () => {
                     Bio
                   </label>
                   <div className="mt-1">
-                    <textarea id="bio" name="bio" rows={4} value={profileData.bio} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
+                    <textarea id="bio" name="bio" rows={4} value={userData.bio} onChange={handleProfileChange} className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">
-                    Brief description for your profile. This will be visible to
-                    clients.
-                  </p>
                 </div>
               </div>
               <div className="flex justify-end">
                 <button type="button" className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
                   Cancel
                 </button>
-                <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-tan-600 hover:bg-tan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                   Save
                 </button>
               </div>
@@ -271,7 +332,7 @@ const Settings = () => {
                 <button type="button" className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
                   Cancel
                 </button>
-                <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-tan-600 hover:bg-tan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                   Save
                 </button>
               </div>
@@ -349,7 +410,7 @@ const Settings = () => {
                     </div>
                   </div>
                   <div className="mt-4">
-                    <button type="button" className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    <button type="button" className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-tan-600 hover:bg-tan-700">
                       <PlusIcon size={16} className="mr-2" />
                       Add payment method
                     </button>
@@ -465,7 +526,7 @@ const Settings = () => {
                     </div>
                   </div>
                   <div className="mt-5">
-                    <button type="submit" className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    <button type="submit" className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-tan-600 hover:bg-tan-700">
                       <SaveIcon size={16} className="mr-2" />
                       Update password
                     </button>
@@ -616,7 +677,7 @@ const Settings = () => {
                 <button type="button" className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
                   Reset to defaults
                 </button>
-                <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-tan-600 hover:bg-tan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                   Save
                 </button>
               </div>

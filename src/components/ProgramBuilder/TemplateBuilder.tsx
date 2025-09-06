@@ -36,7 +36,7 @@ const TemplateBuilder = ({
           <button onClick={() => setIsEditing(!isEditing)} className="p-2 rounded-md hover:bg-gray-100">
             <SettingsIcon size={18} className="text-gray-500" />
           </button>
-          <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+          <button className="flex items-center px-3 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700">
             <SaveIcon size={16} className="mr-1" />
             {isEditing ? 'Save Changes' : 'Save Template'}
           </button>
@@ -121,7 +121,7 @@ const TemplateBuilder = ({
                     </div>
                   </div>
                   <div className="px-4 pb-4 pl-18">
-                    <div className="p-3 bg-blue-50 rounded-md">
+                    <div className="p-3 bg-tan-50 rounded-md">
                       <div className="flex items-center justify-between mb-2">
                         <h5 className="text-sm font-medium text-blue-900">
                           Progression Rules
@@ -156,7 +156,7 @@ const TemplateBuilder = ({
             </div>
           </div>
           <div className="flex justify-end">
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+            <button className="px-4 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700">
               Save Template
             </button>
           </div>

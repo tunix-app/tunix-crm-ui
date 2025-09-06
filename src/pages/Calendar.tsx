@@ -46,7 +46,7 @@ const Calendar = () => {
       <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
         <div className="p-4 border-b flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center">
-            <button onClick={navigateToday} className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+            <button onClick={navigateToday} className="px-4 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700">
               Today
             </button>
             <div className="flex items-center mx-4">
@@ -74,7 +74,7 @@ const Calendar = () => {
             <button className="p-2 rounded-md hover:bg-gray-100">
               <FilterIcon size={18} />
             </button>
-            <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+            <button className="flex items-center px-3 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700">
               <PlusIcon size={16} className="mr-1" />
               New Session
             </button>

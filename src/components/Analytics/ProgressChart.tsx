@@ -23,7 +23,7 @@ const ProgressChart = ({
           const randomVariation = Math.floor(Math.random() * 15);
           const height = baseHeight + randomVariation;
           return <div key={i} className="flex-1 mx-px">
-                  <div className="bg-blue-500 rounded-t-sm" style={{
+                  <div className="bg-tan-500 rounded-t-sm" style={{
               height: `${height}%`
             }} />
                 </div>;

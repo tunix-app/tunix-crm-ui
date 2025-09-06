@@ -181,7 +181,7 @@ const Clients = () => {
               <button className="p-2 rounded-md hover:bg-gray-100">
                 <FilterIcon size={18} />
               </button>
-              <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+              <button className="flex items-center px-3 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700">
                 <PlusIcon size={16} className="mr-1" />
                 Add Client
               </button>
@@ -251,7 +251,7 @@ const Clients = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           {currentProgram ? <div className="flex items-center">
                               <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                <div className="bg-blue-600 h-2.5 rounded-full" style={{
+                                <div className="bg-tan-600 h-2.5 rounded-full" style={{
                           width: `${currentProgram.progress}%`
                         }}></div>
                               </div>

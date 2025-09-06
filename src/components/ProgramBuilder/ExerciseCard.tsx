@@ -17,7 +17,7 @@ const ExerciseCard = ({
           {exercise.muscle} • {exercise.equipment}
         </p>
         <div className="flex flex-wrap gap-1 mt-2">
-          {exercise.tags.map(tag => <span key={tag} className={`text-xs px-2 py-1 rounded-full ${tag.includes('strength') ? 'bg-blue-100 text-blue-800' : tag.includes('mobility') ? 'bg-green-100 text-green-800' : tag.includes('rehab') ? 'bg-yellow-100 text-yellow-800' : tag.includes('recovery') ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}`}>
+          {exercise.tags.map(tag => <span key={tag} className={`text-xs px-2 py-1 rounded-full ${tag.includes('strength') ? 'bg-tan-100 text-blue-800' : tag.includes('mobility') ? 'bg-green-100 text-green-800' : tag.includes('rehab') ? 'bg-yellow-100 text-yellow-800' : tag.includes('recovery') ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}`}>
               {tag}
             </span>)}
         </div>
@@ -29,7 +29,7 @@ const ExerciseCard = ({
             <button className="p-1.5 rounded-full hover:bg-gray-100">
               <InfoIcon size={18} className="text-gray-500" />
             </button>
-            <button className="p-1.5 rounded-full bg-blue-100 hover:bg-blue-200">
+            <button className="p-1.5 rounded-full bg-tan-100 hover:bg-tan-200">
               <PlusIcon size={18} className="text-blue-600" />
             </button>
           </div>

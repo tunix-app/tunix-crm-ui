@@ -97,7 +97,7 @@ const ClientAnalytics = () => {
       <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
         <div className="p-4 border-b border-gray-200 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center">
-            <div className="bg-blue-100 p-2 rounded-full mr-3">
+            <div className="bg-tan-100 p-2 rounded-full mr-3">
               <UsersIcon size={20} className="text-blue-600" />
             </div>
             <div>
@@ -129,7 +129,7 @@ const ClientAnalytics = () => {
               <FileTextIcon size={16} className="mr-1" />
               Export Report
             </button>
-            <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+            <button className="flex items-center px-3 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700">
               <PlusIcon size={16} className="mr-1" />
               Create Snapshot
             </button>
@@ -280,7 +280,7 @@ const ClientAnalytics = () => {
                             <div className="flex items-center">
                               <div className="flex-1">
                                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                  <div className="h-full bg-blue-500 rounded-full" style={{
+                                  <div className="h-full bg-tan-500 rounded-full" style={{
                               width: `${program.clients / aggregateData.totalClients * 100}%`
                             }}></div>
                                 </div>
@@ -328,7 +328,7 @@ const ClientAnalytics = () => {
                         </span>
                       </div>
                       <div className="flex items-center">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                        <div className="w-3 h-3 bg-tan-500 rounded-full mr-2"></div>
                         <span className="text-xs text-gray-600">
                           Completed Programs
                         </span>
@@ -407,7 +407,7 @@ const ClientAnalytics = () => {
                               <div className="flex items-center">
                                 <div className="flex-1">
                                   <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                    <div className="h-full bg-blue-500 rounded-full" style={{
+                                    <div className="h-full bg-tan-500 rounded-full" style={{
                               width: `${value / aggregateData.totalClients * 100}%`
                             }}></div>
                                   </div>
@@ -463,7 +463,7 @@ const ClientAnalytics = () => {
                       </div>
                       <div className="border border-gray-200 rounded-lg p-4">
                         <div className="flex items-center">
-                          <div className="p-2 rounded-md bg-blue-100 mr-3">
+                          <div className="p-2 rounded-md bg-tan-100 mr-3">
                             <ActivityIcon size={20} className="text-blue-600" />
                           </div>
                           <div>
@@ -502,14 +502,14 @@ const ClientAnalytics = () => {
                       <div className="relative pt-1">
                         <div className="flex mb-2 items-center justify-between">
                           <div>
-                            <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
+                            <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-tan-200">
                               Client Journey
                             </span>
                           </div>
                         </div>
                         <div className="flex items-center">
                           <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-                            <div className="bg-blue-600 h-2.5 rounded-l-full" style={{
+                            <div className="bg-tan-600 h-2.5 rounded-l-full" style={{
                           width: '11%'
                         }}></div>
                             <div className="bg-green-500 h-2.5" style={{
@@ -553,7 +553,7 @@ const ClientAnalytics = () => {
                 </div>
                 <div className="bg-white border border-gray-200 rounded-lg p-4">
                   <div className="flex items-center">
-                    <div className="p-2 rounded-md bg-blue-100 mr-3">
+                    <div className="p-2 rounded-md bg-tan-100 mr-3">
                       <CheckCircleIcon size={20} className="text-blue-600" />
                     </div>
                     <div>
@@ -678,7 +678,7 @@ const ClientAnalytics = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${program.effectiveness === 'High' ? 'bg-green-100 text-green-800' : program.effectiveness === 'Medium' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${program.effectiveness === 'High' ? 'bg-green-100 text-green-800' : program.effectiveness === 'Medium' ? 'bg-tan-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}>
                                 {program.effectiveness}
                               </span>
                             </td>
