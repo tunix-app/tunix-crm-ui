@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Plus, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import CalendarView from './CalendarView';
+import { NewSession } from './scheduling/newSessionDialog';
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'day' | 'week' | 'month'>('week');
@@ -41,7 +42,7 @@ export default function CalendarPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Calendar</h1>
         <p className="text-gray-600">
-          Manage your schedule and client sessions
+          Manage your schedule and sessions
         </p>
       </div>
       <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
@@ -75,10 +76,7 @@ export default function CalendarPage() {
             <button className="p-2 rounded-md hover:bg-gray-100">
               <SlidersHorizontal size={18} />
             </button>
-            <Button variant="blue" size="sm" className="flex items-center">
-              <Plus size={16} className="mr-1" />
-              New Session
-            </Button>
+            <NewSession />
           </div>
         </div>
         <div className="flex-1 overflow-y-auto">

@@ -63,7 +63,15 @@ const Header = ({
       </button>
       <div className="flex-1 flex items-center justify-between">
         {showSearch ? <div className="relative max-w-md w-full flex items-center">
-            <input type="text" placeholder="Search clients, programs..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pl-10 pr-10 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" autoFocus />
+            <input 
+              type="text" 
+              placeholder="Search clients, programs..." 
+              value={searchTerm} 
+              onChange={e => setSearchTerm(e.target.value)} 
+              className="w-full pl-10 pr-10 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+              autoFocus 
+              style={{ borderRadius: '24px' }}
+            />
             <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <button onClick={() => setShowSearch(false)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
               <X size={18} />
@@ -125,7 +133,13 @@ const Header = ({
           </div>
           {/* Add Button with Dropdown */}
           <div className="relative" ref={addMenuRef}>
-            <Button onClick={() => setShowAddMenu(!showAddMenu)} variant="blue" size="sm" className="flex items-center">
+            <Button 
+              onClick={() => setShowAddMenu(!showAddMenu)} 
+              variant="blue" 
+              size="sm" 
+              className="flex items-center"
+              style={{ borderRadius: '9999px' }}
+            >
               <Plus size={16} className="mr-1" />
               Add New
             </Button>

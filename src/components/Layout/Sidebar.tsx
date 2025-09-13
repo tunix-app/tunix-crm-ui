@@ -45,15 +45,10 @@ const Sidebar = ({
     icon: <Users size={20} />,
     path: '/clients',
     notifications: notifications.clients
-  }, {
-    name: 'Settings',
-    icon: <Settings size={20} />,
-    path: '/settings',
-    notifications: notifications.settings
   }];
-  return <div className={`${sidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300 bg-gray-900 text-white flex flex-col`}>
+  return <div className={`${sidebarOpen ? 'w-64' : 'w-24'} transition-all duration-300 bg-gray-900 text-white flex flex-col`}>
       <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
-        {sidebarOpen ? <h1 className="text-xl font-bold">GJBR</h1> : <h1 className="text-xl font-bold">GJB</h1>}
+        {sidebarOpen ? <h1 className="text-xl font-bold">GJBR</h1> : <h1 className="text-lg font-bold">GJBR</h1>}
         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1 rounded-md hover:bg-gray-800">
           {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
         </button>
@@ -79,7 +74,7 @@ const Sidebar = ({
         </ul>
       </div>
       <div className="p-4 border-t border-gray-800">
-        <div className="flex items-center">
+        <Link to="/settings" className="flex items-center rounded-md p-2 transition-colors">
           <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
             <span className="font-medium text-sm">JS</span>
           </div>
@@ -87,7 +82,7 @@ const Sidebar = ({
               <p className="text-sm font-medium">Jahneil Schuster</p>
               <p className="text-xs text-gray-400">Head Trainer</p>
             </div>}
-        </div>
+        </Link>
       </div>
     </div>;
 };
