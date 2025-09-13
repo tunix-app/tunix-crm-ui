@@ -163,11 +163,11 @@ const Clients = () => {
         </div> : <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
           <div className="p-4 border-b border-gray-200 flex flex-wrap items-center justify-between gap-4">
             <div className="relative flex-1 max-w-md">
-              <input type="text" placeholder="Search clients..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <input type="text" placeholder="Search clients..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" style={{ borderRadius: '24px' }} />
               <SearchIcon size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
             <div className="flex items-center space-x-2">
-              <div className="bg-gray-100 p-1 rounded-md flex">
+              <div className="bg-gray-100 p-1 rounded-md flex" style={{ borderRadius: '24px' }}>
                 <button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'all' ? 'bg-white shadow' : ''}`} onClick={() => setStatusFilter('all')}>
                   All
                 </button>
@@ -207,9 +207,9 @@ const Clients = () => {
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Current Program
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Progress
-                    </th>
+                    </th> */}
                     <th scope="col" className="relative px-6 py-3">
                       <span className="sr-only">Actions</span>
                     </th>
@@ -248,7 +248,7 @@ const Clients = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {currentProgram ? currentProgram.name : '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        {/* <td className="px-6 py-4 whitespace-nowrap">
                           {currentProgram ? <div className="flex items-center">
                               <div className="w-full bg-gray-200 rounded-full h-2.5">
                                 <div className="bg-tan-600 h-2.5 rounded-full" style={{
@@ -259,7 +259,7 @@ const Clients = () => {
                                 {currentProgram.progress}%
                               </span>
                             </div> : '-'}
-                        </td>
+                        </td> */}
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button onClick={e => {
                       e.stopPropagation();

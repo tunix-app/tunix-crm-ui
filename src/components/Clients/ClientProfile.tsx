@@ -330,7 +330,7 @@ const ClientProfile = ({
                       <div>
                         <h4 className="font-medium">{program.name}</h4>
                         <div className="text-sm text-gray-500">
-                          {program.status === 'completed' ? `Completed on ${formatDate(program.completedDate)}` : program.status === 'in-progress' ? `In progress - ${program.progress}% complete` : 'On hold'}
+                          {program.status === 'completed' ? `Completed on ${formatDate(program?.completedDate || null)}` : program.status === 'in-progress' ? `In progress - ${program.progress}% complete` : 'On hold'}
                         </div>
                       </div>
                     </div>

@@ -42,17 +42,21 @@ export function NewSession() {
                         <DialogHeader>
                             <DialogTitle>Schedule New Session</DialogTitle>
                             <DialogDescription>
-                                Schedule a new session with a Coach
+                                Schedule a new session
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-3">
                             <div className="grid gap-3">
-                                <Label htmlFor="username-1">Username</Label>
-                                <Input id="username-1" name="username" defaultValue="@peduarte" />
+                                <Label htmlFor="clientName-1">Client Name</Label>
+                                <Input style={{ borderRadius: '24px' }} id="clientName-1" name="clientName" defaultValue="@peduarte" />
+                            </div>
+                            <div className="grid gap-3">
+                                <Label htmlFor="clientEmail-1">Client Email</Label>
+                                <Input style={{ borderRadius: '24px' }} id="clientEmail-1" name="clientEmail" defaultValue="@peduarte" />
                             </div>
                             <div className="grid gap-3">
                                 <Select>
-                                <SelectTrigger className="w-[180px]">
+                                <SelectTrigger className="w-[180px]" style={{ borderRadius: '24px'}}>
                                     <SelectValue placeholder="Select session type" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -69,9 +73,9 @@ export function NewSession() {
                         </div>
                         <DialogFooter className="pt-4">
                             <DialogClose asChild>
-                                <Button variant="outline" className="mr-2">Cancel</Button>
+                                <Button variant="outline" className="mr-2 bg-red-100 hover:bg-red-100" style={{ borderRadius: '24px' }}>Cancel</Button>
                             </DialogClose>
-                            <Button type="submit">Create Session</Button>
+                            <Button type="submit" className="mr-2 bg-green-100" variant="outline" style={{ borderRadius: '24px' }}>Create Session</Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
