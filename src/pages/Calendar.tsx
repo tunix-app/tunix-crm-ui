@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, FilterIcon } from 'lucide-react';
 import CalendarView from '../components/Calendar/CalendarView';
 import NewSession from '@/components/Calendar/scheduling/newSessionDialog';
+import { Button } from '@/components/ui/button';
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'day' | 'week' | 'month'>('week');
@@ -61,20 +62,20 @@ const Calendar = () => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="bg-gray-100 p-1 rounded-md flex">
-              <button style={{ borderRadius: '24px' }} className={`px-3 py-1 text-sm rounded-md ${view === 'day' ? 'bg-white shadow' : ''}`} onClick={() => setView('day')}>
+            <div className="bg-gray-100 p-1 rounded-md flex" style={{ borderRadius: '24px' }}>
+              <Button className={`px-3 py-1 text-sm rounded-md ${view === 'day' ? 'bg-white shadow' : ''}`} onClick={() => setView('day')}>
                 Day
-              </button>
-              <button style={{ borderRadius: '24px' }} className={`px-3 py-1 text-sm rounded-md ${view === 'week' ? 'bg-white shadow' : ''}`} onClick={() => setView('week')}>
+              </Button>
+              <Button className={`px-3 py-1 text-sm rounded-md ${view === 'week' ? 'bg-white shadow' : ''}`} onClick={() => setView('week')}>
                 Week
-              </button>
-              <button style={{ borderRadius: '24px' }} className={`px-3 py-1 text-sm rounded-md ${view === 'month' ? 'bg-white shadow' : ''}`} onClick={() => setView('month')}>
+              </Button>
+              <Button className={`px-3 py-1 text-sm rounded-md ${view === 'month' ? 'bg-white shadow' : ''}`} onClick={() => setView('month')}>
                 Month
-              </button>
+              </Button>
             </div>
-            <button className="p-2 rounded-md hover:bg-gray-100">
+            <Button className="p-2 rounded-md hover:bg-gray-100">
               <FilterIcon size={18} />
-            </button>
+            </Button>
             <NewSession />
           </div>
         </div>
