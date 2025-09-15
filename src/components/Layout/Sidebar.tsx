@@ -31,6 +31,12 @@ const Sidebar = ({
     path: '/calendar',
     notifications: notifications.calendar
   }, {
+    name: 'Clients',
+    icon: <Users size={20} />,
+    path: '/clients',
+    notifications: notifications.clients
+  }, 
+  {
     name: 'Program Builder',
     icon: <Dumbbell size={20} />,
     path: '/program-builder',
@@ -40,11 +46,6 @@ const Sidebar = ({
     icon: <BarChart size={20} />,
     path: '/client-analytics',
     notifications: notifications.clientAnalytics
-  }, {
-    name: 'Clients',
-    icon: <Users size={20} />,
-    path: '/clients',
-    notifications: notifications.clients
   }];
   return <div className={`${sidebarOpen ? 'w-64' : 'w-24'} transition-all duration-300 bg-gray-900 text-white flex flex-col`}>
       <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">

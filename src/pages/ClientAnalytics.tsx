@@ -90,9 +90,9 @@ const ClientAnalytics = () => {
   return <div className="h-full flex flex-col">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Client Analytics</h1>
-        <p className="text-gray-600">
+        {/* <p className="text-gray-600">
           Aggregate metrics and insights across all clients
-        </p>
+        </p> */}
       </div>
       <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
         <div className="p-4 border-b border-gray-200 flex flex-wrap items-center justify-between gap-4">

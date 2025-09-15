@@ -41,9 +41,9 @@ export default function CalendarPage() {
   return <div className="h-full flex flex-col">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Calendar</h1>
-        <p className="text-gray-600">
+        {/* <p className="text-gray-600">
           Manage your schedule and sessions
-        </p>
+        </p> */}
       </div>
       <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
         <div className="p-4 border-b flex flex-wrap items-center justify-between gap-4">
