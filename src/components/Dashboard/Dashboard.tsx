@@ -47,10 +47,10 @@ export default function Dashboard() {
   }];
   return <div className="h-full">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Trainer Dashboard</h1>
-        <p className="text-gray-600">
+        <h1 className="text-2xl font-bold text-gray-800">Overview</h1>
+        {/* <p className="text-gray-600">
           Welcome back! Here's an overview of your day.
-        </p>
+        </p> */}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-6">
         <Card>

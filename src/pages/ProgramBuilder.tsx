@@ -124,9 +124,9 @@ const ProgramBuilder = () => {
   return <div className="h-full flex flex-col">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Program Builder</h1>
-        <p className="text-gray-600">
+        {/* <p className="text-gray-600">
           Create and manage exercise programs for your clients
-        </p>
+        </p> */}
       </div>
       <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
         <div className="border-b border-gray-200">

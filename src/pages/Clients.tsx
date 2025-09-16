@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SearchIcon, PlusIcon, FilterIcon, ChevronRightIcon, ArrowUpRightIcon, ClipboardCheckIcon, CalendarIcon, TagIcon, UserIcon } from 'lucide-react';
 import ClientProfile from '../components/Clients/ClientProfile';
+import { Button } from '@/components/ui/button';
 // Mock client data
 const clients = [{
   id: 1,
@@ -148,9 +149,9 @@ const Clients = () => {
   return <div className="h-full flex flex-col">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Clients</h1>
-        <p className="text-gray-600">
+        {/* <p className="text-gray-600">
           Manage your client relationships and track their progress
-        </p>
+        </p> */}
       </div>
       {selectedClient ? <div className="flex-1 flex flex-col">
           <div className="mb-4">
@@ -168,23 +169,23 @@ const Clients = () => {
             </div>
             <div className="flex items-center space-x-2">
               <div className="bg-gray-100 p-1 rounded-md flex" style={{ borderRadius: '24px' }}>
-                <button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'all' ? 'bg-white shadow' : ''}`} onClick={() => setStatusFilter('all')}>
+                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'all' ? 'bg-white shadow' : ''}`} onClick={() => setStatusFilter('all')}>
                   All
-                </button>
-                <button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'active' ? 'bg-white shadow' : ''}`} onClick={() => setStatusFilter('active')}>
+                </Button>
+                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'active' ? 'bg-white shadow' : ''}`} onClick={() => setStatusFilter('active')}>
                   Active
-                </button>
-                <button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'inactive' ? 'bg-white shadow' : ''}`} onClick={() => setStatusFilter('inactive')}>
+                </Button>
+                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'inactive' ? 'bg-white shadow' : ''}`} onClick={() => setStatusFilter('inactive')}>
                   Inactive
-                </button>
+                </Button>
               </div>
-              <button className="p-2 rounded-md hover:bg-gray-100">
+              <Button className="p-2 rounded-md hover:bg-gray-100">
                 <FilterIcon size={18} />
-              </button>
-              <button className="flex items-center px-3 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700">
+              </Button>
+              <Button className="flex items-center px-3 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700">
                 <PlusIcon size={16} className="mr-1" />
                 Add Client
-              </button>
+              </Button>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-6">
@@ -260,14 +261,14 @@ const Clients = () => {
                               </span>
                             </div> : '-'}
                         </td> */}
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        {/* <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button onClick={e => {
                       e.stopPropagation();
                       setSelectedClient(client.id);
                     }} className="text-blue-600 hover:text-blue-900">
                             <ArrowUpRightIcon size={16} />
                           </button>
-                        </td>
+                        </td> */}
                       </tr>;
               })}
                 </tbody>
