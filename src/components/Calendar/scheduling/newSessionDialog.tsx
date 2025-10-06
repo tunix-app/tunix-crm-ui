@@ -41,9 +41,6 @@ export function NewSession() {
                     <form>
                         <DialogHeader>
                             <DialogTitle>Schedule New Session</DialogTitle>
-                            <DialogDescription>
-                                Schedule a new session
-                            </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-3">
                             <div className="grid gap-3">
@@ -61,11 +58,10 @@ export function NewSession() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                    <SelectItem value="apple">Strength Training</SelectItem>
-                                    <SelectItem value="banana">Mobility Work</SelectItem>
-                                    <SelectItem value="blueberry">Rehabilitation</SelectItem>
-                                    <SelectItem value="grapes">Assessment</SelectItem>
-                                    <SelectItem value="pineapple">Stretching</SelectItem>
+                                    <SelectItem value="neuromuscular_reconstruction">Neuromuscular Reconstruction</SelectItem>
+                                    <SelectItem value="stretch">Stretch</SelectItem>
+                                    <SelectItem value="personal_training">Personal Training</SelectItem>
+                                    <SelectItem value="group_training">Group Training</SelectItem>
                                     </SelectGroup>
                                 </SelectContent>
                                 </Select>

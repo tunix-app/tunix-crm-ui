@@ -116,7 +116,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow">
+        {/* <div className="bg-white rounded-lg shadow">
           <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="font-medium text-gray-800">Client Alerts</h2>
             <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
@@ -141,9 +141,9 @@ const Dashboard = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
-      <div className="mt-6 bg-white rounded-lg shadow">
+      {/* <div className="mt-6 bg-white rounded-lg shadow">
         <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
           <h2 className="font-medium text-gray-800">
             Client Progress Overview
@@ -182,7 +182,7 @@ const Dashboard = () => {
               </div>)}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>;
 };
 export default Dashboard;

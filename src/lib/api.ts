@@ -63,7 +63,7 @@ export const userApi = {
     method: 'PATCH',
     body: JSON.stringify(updatedUserData),
   }),
-
+  // #region TODOs
   // Settings endpoints
 //   getNotificationSettings: () => apiRequest<any>('/user/notifications'),
 //   updateNotificationSettings: (data: any) => apiRequest<any>('/user/notifications', {
@@ -87,6 +87,8 @@ export const userApi = {
 //   getBillingInfo: () => apiRequest<any>('/user/billing'),
 //   getPaymentMethods: () => apiRequest<any>('/user/payment-methods'),
 //   getBillingHistory: () => apiRequest<any>('/user/billing-history'),
+//#endregion
 };
+
 
 export { ApiError };

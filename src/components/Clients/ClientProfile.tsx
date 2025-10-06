@@ -150,12 +150,12 @@ const ClientProfile = ({
           <button className={`px-6 py-4 font-medium text-sm ${activeTab === 'overview' ? 'text-amber-600 border-b-2 border-amber-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('overview')}>
             Overview
           </button>
-          <button className={`px-6 py-4 font-medium text-sm ${activeTab === 'programs' ? 'text-amber-600 border-b-2 border-amber-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('programs')}>
+          {/* <button className={`px-6 py-4 font-medium text-sm ${activeTab === 'programs' ? 'text-amber-600 border-b-2 border-amber-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('programs')}>
             Programs
-          </button>
-          <button className={`px-6 py-4 font-medium text-sm ${activeTab === 'metrics' ? 'text-amber-600 border-b-2 border-amber-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('metrics')}>
+          </button> */}
+          {/* <button className={`px-6 py-4 font-medium text-sm ${activeTab === 'metrics' ? 'text-amber-600 border-b-2 border-amber-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('metrics')}>
             Metrics
-          </button>
+          </button> */}
           <button className={`px-6 py-4 font-medium text-sm ${activeTab === 'notes' ? 'text-amber-600 border-b-2 border-amber-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('notes')}>
             Training Notes
           </button>
@@ -216,7 +216,7 @@ const ClientProfile = ({
                   </button>
                 </div>
               </div>
-              <div className="bg-white border border-gray-200 rounded-lg p-5">
+              {/* <div className="bg-white border border-gray-200 rounded-lg p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium">Current Program</h3>
                   <button className="text-amber-600 text-sm hover:text-amber-800">
@@ -257,9 +257,9 @@ const ClientProfile = ({
                       Assign Program
                     </button>
                   </div>}
-              </div>
+              </div> */}
             </div>
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            {/* <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="font-medium">Attendance Overview</h3>
               </div>
@@ -310,7 +310,7 @@ const ClientProfile = ({
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>}
         {activeTab === 'programs' && <div className="space-y-6">
             <div className="flex justify-between items-center">

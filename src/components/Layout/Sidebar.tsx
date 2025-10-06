@@ -36,17 +36,19 @@ const Sidebar = ({
     path: '/clients',
     notifications: notifications.clients
   }, 
-  {
-    name: 'Program Builder',
-    icon: <Dumbbell size={20} />,
-    path: '/program-builder',
-    notifications: notifications.programBuilder
-  }, {
-    name: 'Client Analytics',
-    icon: <BarChart size={20} />,
-    path: '/client-analytics',
-    notifications: notifications.clientAnalytics
-  }];
+  // {
+  //   name: 'Program Builder',
+  //   icon: <Dumbbell size={20} />,
+  //   path: '/program-builder',
+  //   notifications: notifications.programBuilder
+  // }, 
+  // {
+  //   name: 'Client Analytics',
+  //   icon: <BarChart size={20} />,
+  //   path: '/client-analytics',
+  //   notifications: notifications.clientAnalytics
+  // }
+];
   return <div className={`${sidebarOpen ? 'w-64' : 'w-24'} transition-all duration-300 bg-gray-900 text-white flex flex-col`}>
       <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
         {sidebarOpen ? <h1 className="text-xl font-bold">GJBR</h1> : <h1 className="text-lg font-bold">GJBR</h1>}
