@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { CalendarIcon, PhoneIcon, MailIcon, ClipboardCheckIcon, TagIcon, EditIcon, PlusIcon, CheckCircleIcon, ClockIcon, AlertCircleIcon, TrendingUpIcon, BarChart2Icon, SaveIcon, XIcon } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { CalendarIcon, PhoneIcon, MailIcon, ClipboardCheckIcon, TagIcon, EditIcon, PlusIcon, CheckCircleIcon, ClockIcon, AlertCircleIcon, TrendingUpIcon, BarChart2Icon, SaveIcon, XIcon, CircleSlash, Trash } from 'lucide-react';
 import ProgressChart from '../Analytics/ProgressChart';
 import ClientNotes from '../Analytics/ClientNotes';
+import { clientApi } from '@/lib/clientApi';
+import { Link } from 'react-router-dom';
 interface Program {
   id: number;
   name: string;
@@ -11,14 +13,15 @@ interface Program {
   exercises?: number[];
 }
 interface ClientData {
-  id: number;
-  name: string;
-  email: string;
+  id: string;
+  client_name: string;
+  client_email: string;
+  client_id: string;
   phone: string;
   joinDate: string;
-  status: string;
-  lastSession: string;
-  nextSession: string | null;
+  isActive: boolean;
+  last_session: string;
+  next_session: string | null;
   goals: string[];
   notes: string;
   programs: Program[];
@@ -83,6 +86,23 @@ const exerciseLibrary = [{
 const ClientProfile = ({
   client
 }: ClientProfileProps) => {
+ 
+  const [clientData, setClientData] = useState<ClientData>(client);
+
+
+  useEffect(() => {
+    const fetchClientData = async () => {
+      try {
+        const backendClient = await clientApi.getClientById(client.id);
+        console.log('Fetched client data:', backendClient);
+        setClientData(backendClient);
+      } catch (error) {
+        console.error('Failed to fetch client data:', error);
+      }
+    }
+    fetchClientData();
+  }, [client]);
+
   const [activeTab, setActiveTab] = useState<'overview' | 'programs' | 'metrics' | 'notes'>('overview');
   const [showProgramDetails, setShowProgramDetails] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
@@ -113,34 +133,35 @@ const ClientProfile = ({
       <div className="p-4 sm:p-6 border-b border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center">
           <div className="flex items-center">
-            <div className="h-16 w-16 md:h-20 md:w-20 flex-shrink-0">
-              <img className="h-full w-full rounded-full object-cover" src={client.profileImage} alt={client.name} />
-            </div>
+            {/* <div className="h-16 w-16 md:h-20 md:w-20 flex-shrink-0">
+              <img className="h-full w-full rounded-full object-cover" src={client.profileImage} alt={client.client_name} />
+            </div> */}
             <div className="ml-4">
-              <h2 className="text-xl font-bold text-gray-900">{client.name}</h2>
+              <h2 className="text-xl font-bold text-gray-900">{clientData.client_name}</h2>
               <div className="flex flex-wrap items-center mt-1 text-sm text-gray-500">
-                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full mr-2 ${client.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                  {client.status === 'active' ? 'Active' : 'Inactive'}
+                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full mr-2 ${clientData.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                  {clientData.isActive ? 'Active' : 'Inactive'}
                 </span>
                 <span className="flex items-center mr-3">
                   <CalendarIcon size={14} className="mr-1" />
-                  Joined {formatDate(client.joinDate)}
+                  Joined {formatDate(clientData.last_session) /*Change into created_at once backend has implemented it */ } 
                 </span>
               </div>
             </div>
           </div>
           <div className="mt-4 md:mt-0 md:ml-auto flex flex-wrap gap-3">
-            <a href={`tel:${client.phone}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <a href={`tel:${clientData.phone}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
               <PhoneIcon size={16} className="mr-2 text-gray-500" />
-              {client.phone}
+              {clientData.phone}
             </a>
-            <a href={`mailto:${client.email}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <a href={`mailto:${clientData.client_email}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
               <MailIcon size={16} className="mr-2 text-gray-500" />
               Email
             </a>
-            <button className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700">
-              <CalendarIcon size={16} className="mr-2" />
-              Schedule Session
+            <button className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+              {/* <CalendarIcon size={16} className="mr-2" />
+              Schedule Session */}
+              Deactivate Client
             </button>
           </div>
         </div>
@@ -168,7 +189,7 @@ const ClientProfile = ({
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium">Sessions</h3>
                   <button className="text-amber-600 text-sm hover:text-amber-800">
-                    View Calendar
+                    <Link to={`/calendar`}>View Calendar</Link>
                   </button>
                 </div>
                 <div className="space-y-4">
@@ -177,7 +198,7 @@ const ClientProfile = ({
                     <div className="flex items-center mt-1">
                       <CalendarIcon size={16} className="text-gray-400 mr-2" />
                       <span className="font-medium">
-                        {formatDate(client.lastSession)}
+                        {formatDate(clientData.last_session)}
                       </span>
                     </div>
                   </div>
@@ -186,7 +207,7 @@ const ClientProfile = ({
                     <div className="flex items-center mt-1">
                       <CalendarIcon size={16} className="text-gray-400 mr-2" />
                       <span className="font-medium">
-                        {formatDate(client.nextSession)}
+                        {formatDate(clientData.next_session)}
                       </span>
                     </div>
                   </div>
@@ -200,20 +221,29 @@ const ClientProfile = ({
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium">Goals</h3>
                   <button className="text-gray-400 hover:text-gray-600">
-                    <EditIcon size={16} />
+                    <PlusIcon size={16} />
                   </button>
                 </div>
                 <div className="space-y-2">
-                  {client.goals.map((goal, index) => <div key={index} className="flex items-start">
-                      <div className="mt-0.5 mr-2 text-green-500">
-                        <CheckCircleIcon size={16} />
+                  {clientData.goals && clientData.goals.length > 0 ? (
+                    clientData.goals.map((goal, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <div className="flex items-start">
+                          <div className="mt-0.5 mr-2 text-green-500">
+                            <CircleSlash size={16} />
+                          </div>
+                          <span className="text-sm">{goal}</span>
+                        </div>
+                        <button className="text-gray-400 hover:text-gray-600">
+                          <Trash size={16} />
+                        </button>
                       </div>
-                      <span className="text-sm">{goal}</span>
-                    </div>)}
-                  <button className="w-full mt-2 py-2 flex items-center justify-center text-sm text-gray-600 hover:text-gray-800 bg-gray-50 rounded-md">
-                    <PlusIcon size={16} className="mr-1" />
-                    Add Goal
-                  </button>
+                    ))
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-gray-500">No goals set yet</p>
+                    </div>
+                  )}
                 </div>
               </div>
               {/* <div className="bg-white border border-gray-200 rounded-lg p-5">
@@ -485,7 +515,7 @@ const ClientProfile = ({
             </div>
           </div>}
         {activeTab === 'notes' && <div className="space-y-6">
-            <ClientNotes clientId={client.id.toString()} showEditor={true} limit={5} />
+            <ClientNotes clientId={clientData.client_id} showEditor={true} limit={5} />
           </div>}
       </div>
       {/* Program Details Popup */}

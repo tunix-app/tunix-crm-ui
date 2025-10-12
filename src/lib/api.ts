@@ -1,6 +1,3 @@
-import { create } from "domain";
-
-// API configuration and utilities
 // const API_BASE_URL = import.meta.env.VITE_TUNIX_BACKEND_BASE_URL || 'https://tunix-crm-backend.fly.dev';
 const API_BASE_URL = 'https://tunix-crm-backend.fly.dev';
 
@@ -11,7 +8,7 @@ class ApiError extends Error {
   }
 }
 
-async function apiRequest<T>(
+export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
@@ -36,7 +33,6 @@ async function apiRequest<T>(
 
   try {
     const response = await fetch(url, config);
-    
     if (!response.ok) {
       throw new ApiError(response.status, `HTTP error! status: ${response.status}`);
     }
@@ -50,45 +46,5 @@ async function apiRequest<T>(
     throw new ApiError(400, 'Network error or server unreachable');
   }
 }
-
-// API methods
-export const userApi = {
-  // Profile endpoints
-  getUser: (userId: string) => apiRequest<any>(`/user/${userId}`),
-  createUser: (newUserData: any) => apiRequest<any>('/user', {
-    method: 'POST',
-    body: JSON.stringify(newUserData),
-  }),
-  updateUser: (userId: string, updatedUserData: any) => apiRequest<any>(`/user/${userId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(updatedUserData),
-  }),
-  // #region TODOs
-  // Settings endpoints
-//   getNotificationSettings: () => apiRequest<any>('/user/notifications'),
-//   updateNotificationSettings: (data: any) => apiRequest<any>('/user/notifications', {
-//     method: 'PUT',
-//     body: JSON.stringify(data),
-//   }),
-
-//   getAppearanceSettings: () => apiRequest<any>('/user/appearance'),
-//   updateAppearanceSettings: (data: any) => apiRequest<any>('/user/appearance', {
-//     method: 'PUT',
-//     body: JSON.stringify(data),
-//   }),
-
-  // Security endpoints
-//   changePassword: (data: any) => apiRequest<any>('/user/change-password', {
-//     method: 'POST',
-//     body: JSON.stringify(data),
-//   }),
-
-  // Billing endpoints
-//   getBillingInfo: () => apiRequest<any>('/user/billing'),
-//   getPaymentMethods: () => apiRequest<any>('/user/payment-methods'),
-//   getBillingHistory: () => apiRequest<any>('/user/billing-history'),
-//#endregion
-};
-
 
 export { ApiError };

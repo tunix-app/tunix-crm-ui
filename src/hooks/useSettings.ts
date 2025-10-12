@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { userApi, ApiError } from '@/lib/api';
+import { ApiError } from '@/lib/api';
+import { userApi } from "@/lib/userApi";
 
 // Types
 export interface UserProfile {

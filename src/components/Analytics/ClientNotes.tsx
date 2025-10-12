@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { EditIcon, TrashIcon, SaveIcon, PlusIcon } from 'lucide-react';
+import { noteApi } from '@/lib/noteApi';
 interface ClientNotesProps {
   clientId: string;
   limit?: number;
@@ -23,27 +24,24 @@ const ClientNotes = ({
   const [editedTags, setEditedTags] = useState('');
   const [showAllNotes, setShowAllNotes] = useState(false);
   // Mock notes data
-  const [notes, setNotes] = useState<Note[]>([{
-    id: 1,
-    date: '2023-06-15',
-    content: 'Emma showed great progress in her squat form today. We focused on bracing and depth. Her mobility has improved significantly since we started working on hip flexor stretches.',
-    tags: ['strength', 'form', 'mobility']
-  }, {
-    id: 2,
-    date: '2023-06-08',
-    content: 'Noticed some discomfort in right shoulder during overhead pressing. Scaled back weight and focused on technique. Will monitor next session and possibly refer to PT if it persists.',
-    tags: ['injury', 'caution', 'shoulder']
-  }, {
-    id: 3,
-    date: '2023-06-01',
-    content: 'Completed initial assessment. Emma has good baseline strength but limited mobility in hips and ankles. Will focus on mobility work before ramping up strength training.',
-    tags: ['assessment', 'mobility', 'planning']
-  }, {
-    id: 4,
-    date: '2023-05-25',
-    content: 'Discussed nutrition goals today. Emma is tracking macros and aiming for 1800 calories with 140g protein daily. Will check in weekly on adherence.',
-    tags: ['nutrition', 'goals']
-  }]);
+  const [notes, setNotes] = useState<Note[]>([]);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const backendNotes = await noteApi.getNotesByClientId(clientId);
+        console.log('Fetched notes:', backendNotes);
+        setNotes(backendNotes);
+      } catch (error) {
+        console.error('Failed to fetch notes:', error);
+      }
+    }
+    fetchNotes();
+  }, [clientId]);
+
+
+
+
   // Add a new note
   const handleAddNote = () => {
     if (newNote.trim() === '') return;
@@ -130,7 +128,7 @@ const ClientNotes = ({
       </div>
 
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Client Notes History</h3>
+        <h3 className="text-lg font-medium">Client Notes</h3>
         {notes.length > limit && <button onClick={() => setShowAllNotes(!showAllNotes)} className="text-sm text-amber-600 hover:text-amber-800">
             {showAllNotes ? 'Show Recent' : 'Show All Notes'}
           </button>}
@@ -163,9 +161,9 @@ const ClientNotes = ({
                       </span>
                       <span className="mx-2 text-gray-300">•</span>
                       <div className="flex flex-wrap gap-1">
-                        {note.tags.map(tag => <span key={tag} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+                        {note.tags ? (note.tags.map(tag => <span key={tag} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
                             {tag}
-                          </span>)}
+                          </span>)) : null}
                       </div>
                     </div>
                     <div className="flex space-x-1">

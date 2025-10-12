@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserIcon, BellIcon, CreditCardIcon, LockIcon, GlobeIcon, PaletteIcon, SaveIcon, CheckIcon, PlusIcon } from 'lucide-react';
-import { userApi, ApiError } from '@/lib/api';
+import { ApiError } from '@/lib/api';
+import { userApi } from "@/lib/userApi";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState<'profile' | 'notifications' | 'billing' | 'security' | 'appearance'>('profile');
