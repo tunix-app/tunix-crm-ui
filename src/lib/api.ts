@@ -1,5 +1,4 @@
-// const API_BASE_URL = import.meta.env.VITE_TUNIX_BACKEND_BASE_URL || 'https://tunix-crm-backend.fly.dev';
-const API_BASE_URL = 'https://tunix-crm-backend.fly.dev';
+const API_BASE_URL = '/api';
 
 class ApiError extends Error {
   constructor(public status: number, message: string) {
