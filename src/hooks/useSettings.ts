@@ -51,7 +51,7 @@ interface UseSettingsReturn {
   refreshData: () => Promise<void>;
 }
 
-export const useSettings = (): UseSettingsReturn => {
+export const useSettings = (userId: string | null): UseSettingsReturn => {
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings | null>(null);
   const [appearanceSettings, setAppearanceSettings] = useState<AppearanceSettings | null>(null);
@@ -73,12 +73,13 @@ export const useSettings = (): UseSettingsReturn => {
   }, []);
 
   const loadData = useCallback(async () => {
+    if (!userId) return;
     try {
       setIsLoading(true);
       setError(null);
 
       const [profile] = await Promise.all([
-        userApi.getUser('8922225c-931f-4c28-8cfe-84b22159acd8'),
+        userApi.getUser(userId),
         // userApi.getNotificationSettings(),
         // userApi.getAppearanceSettings(),
       ]);
@@ -98,7 +99,8 @@ export const useSettings = (): UseSettingsReturn => {
       setIsUpdating(true);
       setError(null);
       
-      const updatedProfile = await userApi.updateUser('8922225c-931f-4c28-8cfe-84b22159acd8',data);
+      if (!userId) throw new Error('No user selected');
+      const updatedProfile = await userApi.updateUser(userId, data);
       setUserData(updatedProfile);
     } catch (error) {
       handleError(error);

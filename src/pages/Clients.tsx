@@ -3,15 +3,18 @@ import { SearchIcon, PlusIcon, FilterIcon, ChevronRightIcon, ArrowUpRightIcon, C
 import ClientProfile from '../components/Clients/ClientProfile';
 import { Button } from '@/components/ui/button';
 import { clientApi } from '@/lib/clientApi';
+import { useUser } from '@/context/UserContext';
 
 
 const Clients = () => {
+  const { userId } = useUser();
   const [clients, setClients] = useState<any[]>([]);
 
   useEffect(() => {
+    if (!userId) return;
     const fetchClients = async () => {
       try {
-        const backendClients = await clientApi.getClientsByTrainerId('8922225c-931f-4c28-8cfe-84b22159acd8');
+        const backendClients = await clientApi.getClientsByTrainerId(userId);
         console.log('Fetched clients:', backendClients);
         setClients(backendClients);
       } catch (error) {
@@ -20,7 +23,7 @@ const Clients = () => {
     };
 
     fetchClients();
-  }, []);
+  }, [userId]);
 
 
 
