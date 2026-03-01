@@ -12,7 +12,7 @@ export default async function handler(request) {
 
   const url = new URL(request.url);
   const backendPath = url.pathname.replace(/^\/api/, '');
-  const targetUrl = `${backendUrl}${backendPath}${url.search}`;
+  const targetUrl = `${backendUrl.replace(/\/$/, '')}${backendPath}${url.search}`;
 
   const init = {
     method: request.method,
