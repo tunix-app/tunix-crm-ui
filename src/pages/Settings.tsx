@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { UserIcon, BellIcon, CreditCardIcon, LockIcon, GlobeIcon, PaletteIcon, SaveIcon, CheckIcon, PlusIcon } from 'lucide-react';
 import { ApiError } from '@/lib/api';
 import { userApi } from "@/lib/userApi";
+import { useUser } from '@/context/UserContext';
 
 const Settings = () => {
+  const { userId } = useUser();
   const [activeTab, setActiveTab] = useState<'profile' | 'notifications' | 'billing' | 'security' | 'appearance'>('profile');
   const [userData, setUserData] = useState({
     firstName: '',
@@ -15,13 +17,10 @@ const Settings = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // You'll need to get the user ID from your auth system or context
-  // For now, I'm using a placeholder - replace this with actual user ID
-  const userId = "8922225c-931f-4c28-8cfe-84b22159acd8"; // Replace with actual user ID from auth context
 
   // Fetch user data on component mount
   useEffect(() => {
+    if (!userId) return;
     const fetchUserData = async () => {
       try {
         setIsLoading(true);
@@ -75,6 +74,7 @@ const Settings = () => {
   };
 
   const handleProfileSave = async () => {
+    if (!userId) return;
     try {
       setIsLoading(true);
       setError(null);
