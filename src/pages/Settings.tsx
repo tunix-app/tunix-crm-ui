@@ -78,16 +78,19 @@ const Settings = () => {
     try {
       setIsLoading(true);
       setError(null);
-      const updatedUser = await userApi.updateUser(userId, userData);
-      setUserData({
-        firstName: updatedUser.firstName || '',
-        lastName: updatedUser.lastName || '',
+      const updatedUser = await userApi.updateUser(userId, {
+        first_name: userData.firstName,
+        last_name: userData.lastName,
+        email: userData.email,
+        phone: userData.phone,
+      });
+      setUserData(prev => ({
+        ...prev,
+        firstName: updatedUser.first_name || '',
+        lastName: updatedUser.last_name || '',
         email: updatedUser.email || '',
         phone: updatedUser.phone || '',
-        title: updatedUser.title || '',
-        bio: updatedUser.bio || ''
-      });
-      // You could add a success toast/notification here
+      }));
       alert('Profile updated successfully!');
     } catch (err) {
       console.error('Error updating profile:', err);
@@ -241,8 +244,8 @@ const Settings = () => {
                 <button type="button" className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
                   Cancel
                 </button>
-                <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-tan-600 hover:bg-tan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  Save
+                <button type="button" onClick={handleProfileSave} disabled={isLoading} className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-tan-600 hover:bg-tan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
+                  {isLoading ? 'Saving...' : 'Save'}
                 </button>
               </div>
             </div>}
