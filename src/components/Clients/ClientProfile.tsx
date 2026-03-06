@@ -32,6 +32,7 @@ interface ClientData {
 }
 interface ClientProfileProps {
   client: ClientData;
+  onDeactivate?: () => void;
 }
 // Mock exercises from the library
 const exerciseLibrary = [{
@@ -84,10 +85,14 @@ const exerciseLibrary = [{
   image: 'https://images.unsplash.com/photo-1599447292180-45fd84092ef4?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
 }];
 const ClientProfile = ({
-  client
+  client,
+  onDeactivate,
 }: ClientProfileProps) => {
- 
+
   const [clientData, setClientData] = useState<ClientData>(client);
+  const [isDeactivating, setIsDeactivating] = useState(false);
+  const [newGoal, setNewGoal] = useState('');
+  const [showGoalInput, setShowGoalInput] = useState(false);
 
 
   useEffect(() => {
@@ -102,6 +107,46 @@ const ClientProfile = ({
     }
     fetchClientData();
   }, [client]);
+
+  const handleDeactivate = async () => {
+    if (!window.confirm(`Are you sure you want to deactivate ${clientData.client_name}?`)) return;
+    try {
+      setIsDeactivating(true);
+      await clientApi.decommissionClient(clientData.id);
+      onDeactivate?.();
+    } catch (err) {
+      console.error('Failed to deactivate client:', err);
+      alert('Failed to deactivate client. Please try again.');
+    } finally {
+      setIsDeactivating(false);
+    }
+  };
+
+  const handleAddGoal = async () => {
+    const goal = newGoal.trim();
+    if (!goal) return;
+    const updatedGoals = [...(clientData.goals || []), goal];
+    try {
+      await clientApi.updateClient(clientData.id, { goals: updatedGoals });
+      setClientData(prev => ({ ...prev, goals: updatedGoals }));
+      setNewGoal('');
+      setShowGoalInput(false);
+    } catch (err) {
+      console.error('Failed to add goal:', err);
+      alert('Failed to add goal. Please try again.');
+    }
+  };
+
+  const handleRemoveGoal = async (index: number) => {
+    const updatedGoals = (clientData.goals || []).filter((_, i) => i !== index);
+    try {
+      await clientApi.updateClient(clientData.id, { goals: updatedGoals });
+      setClientData(prev => ({ ...prev, goals: updatedGoals }));
+    } catch (err) {
+      console.error('Failed to remove goal:', err);
+      alert('Failed to remove goal. Please try again.');
+    }
+  };
 
   const [activeTab, setActiveTab] = useState<'overview' | 'programs' | 'metrics' | 'notes'>('overview');
   const [showProgramDetails, setShowProgramDetails] = useState(false);
@@ -158,10 +203,8 @@ const ClientProfile = ({
               <MailIcon size={16} className="mr-2 text-gray-500" />
               Email
             </a>
-            <button className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
-              {/* <CalendarIcon size={16} className="mr-2" />
-              Schedule Session */}
-              Deactivate Client
+            <button onClick={handleDeactivate} disabled={isDeactivating} className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50">
+              {isDeactivating ? 'Deactivating...' : 'Deactivate Client'}
             </button>
           </div>
         </div>
@@ -220,7 +263,7 @@ const ClientProfile = ({
               <div className="bg-white border border-gray-200 rounded-lg p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium">Goals</h3>
-                  <button className="text-gray-400 hover:text-gray-600">
+                  <button onClick={() => setShowGoalInput(v => !v)} className="text-gray-400 hover:text-gray-600">
                     <PlusIcon size={16} />
                   </button>
                 </div>
@@ -234,7 +277,7 @@ const ClientProfile = ({
                           </div>
                           <span className="text-sm">{goal}</span>
                         </div>
-                        <button className="text-gray-400 hover:text-gray-600">
+                        <button onClick={() => handleRemoveGoal(index)} className="text-gray-400 hover:text-red-500">
                           <Trash size={16} />
                         </button>
                       </div>
@@ -242,6 +285,21 @@ const ClientProfile = ({
                   ) : (
                     <div className="text-center py-4">
                       <p className="text-sm text-gray-500">No goals set yet</p>
+                    </div>
+                  )}
+                  {showGoalInput && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="text"
+                        value={newGoal}
+                        onChange={e => setNewGoal(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleAddGoal()}
+                        placeholder="Add a goal..."
+                        className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        autoFocus
+                      />
+                      <button onClick={handleAddGoal} className="text-xs px-2 py-1 bg-amber-600 text-white rounded hover:bg-amber-700">Add</button>
+                      <button onClick={() => { setShowGoalInput(false); setNewGoal(''); }} className="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50">Cancel</button>
                     </div>
                   )}
                 </div>

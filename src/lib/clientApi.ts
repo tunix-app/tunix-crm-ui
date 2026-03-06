@@ -7,7 +7,7 @@ export const clientApi = {
         method: 'POST',
         body: JSON.stringify({ query }),
     }),
-    createClient : (newClientData: any) => apiRequest<any>('/client', {
+    createClient : (trainerId: string, newClientData: any) => apiRequest<any>(`/client/trainer/${trainerId}`, {
         method: 'POST',
         body: JSON.stringify(newClientData),
     }),
