@@ -4,6 +4,7 @@ import { UserProfile } from '@/hooks/useSettings';
 interface UserContextValue {
   userId: string | null;
   user: UserProfile | null;
+  isInitializing: boolean;
   setUser: (userId: string, user: UserProfile) => void;
   clearUser: () => void;
 }
@@ -15,6 +16,7 @@ const UserContext = createContext<UserContextValue | null>(null);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null);
   const [user, setUserState] = useState<UserProfile | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   // Rehydrate from localStorage on mount
   useEffect(() => {
@@ -27,6 +29,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       }
     } catch {
       localStorage.removeItem(STORAGE_KEY);
+    } finally {
+      setIsInitializing(false);
     }
   }, []);
 
@@ -43,7 +47,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ userId, user, setUser, clearUser }}>
+    <UserContext.Provider value={{ userId, user, isInitializing, setUser, clearUser }}>
       {children}
     </UserContext.Provider>
   );

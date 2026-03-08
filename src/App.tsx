@@ -11,9 +11,18 @@ import Settings from './pages/Settings';
 import UserSelection from './pages/UserSelection';
 import { UserProvider, useUser } from './context/UserContext';
 
+function UserSelectionGuard() {
+  const { userId, isInitializing } = useUser();
+  if (isInitializing) return null;
+  if (userId) return <Navigate to="/dashboard" replace />;
+  return <UserSelection />;
+}
+
 function ProtectedLayout() {
-  const { userId } = useUser();
+  const { userId, isInitializing } = useUser();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  if (isInitializing) return null;
 
   if (!userId) {
     return <Navigate to="/" replace />;
@@ -37,7 +46,7 @@ export function App() {
     <UserProvider>
       <Router>
 <Routes>
-          <Route path="/" element={<UserSelection />} />
+          <Route path="/" element={<UserSelectionGuard />} />
           <Route element={<ProtectedLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/calendar" element={<Calendar />} />
