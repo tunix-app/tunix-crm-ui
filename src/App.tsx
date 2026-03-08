@@ -36,7 +36,7 @@ export function App() {
   return (
     <UserProvider>
       <Router>
-        <Routes>
+<Routes>
           <Route path="/" element={<UserSelection />} />
           <Route element={<ProtectedLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
