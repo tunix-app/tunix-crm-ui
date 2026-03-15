@@ -105,7 +105,7 @@ const ClientWaiver = ({ clientId }: ClientWaiverProps) => {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-amber-600 rounded-md hover:bg-amber-700 disabled:opacity-50 flex-shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-amber-600 rounded-full hover:bg-amber-700 disabled:opacity-50 flex-shrink-0"
           >
             <UploadIcon size={13} />
             {uploading ? 'Uploading...' : 'Upload Waiver'}
@@ -140,7 +140,7 @@ const ClientWaiver = ({ clientId }: ClientWaiverProps) => {
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <button
                     onClick={() => handleViewWaiver(waiver.id)}
-                    className="p-1.5 text-gray-400 hover:text-amber-600 rounded"
+                    className="p-1.5 text-gray-400 hover:text-amber-600 rounded-full"
                     title="View waiver"
                   >
                     <ExternalLinkIcon size={15} />
@@ -148,7 +148,7 @@ const ClientWaiver = ({ clientId }: ClientWaiverProps) => {
                   <button
                     onClick={() => handleDelete(waiver.id)}
                     disabled={deletingId === waiver.id}
-                    className="p-1.5 text-gray-400 hover:text-red-500 rounded disabled:opacity-50"
+                    className="p-1.5 text-gray-400 hover:text-red-500 rounded-full disabled:opacity-50"
                     title="Delete waiver"
                   >
                     <Trash2Icon size={15} />

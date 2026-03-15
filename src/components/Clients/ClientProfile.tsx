@@ -5,6 +5,7 @@ import ClientNotes from '../Analytics/ClientNotes';
 import { clientApi } from '@/lib/clientApi';
 import { Link } from 'react-router-dom';
 import ClientWaiver from './ClientWaiver';
+import { Skeleton } from '@/components/ui/skeleton';
 interface Program {
   id: number;
   name: string;
@@ -92,6 +93,7 @@ const ClientProfile = ({
 
 
   const [clientData, setClientData] = useState<ClientData>(client);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDeactivating, setIsDeactivating] = useState(false);
   const [newGoal, setNewGoal] = useState('');
   const [showGoalInput, setShowGoalInput] = useState(false);
@@ -111,11 +113,14 @@ const ClientProfile = ({
   useEffect(() => {
     const fetchClientData = async () => {
       try {
+        setIsLoading(true);
         const backendClient = await clientApi.getClientById(client.id);
         console.log('Fetched client data:', backendClient);
         setClientData({ ...backendClient, phone: backendClient.phone ?? backendClient.client_phone ?? '' });
       } catch (error) {
         console.error('Failed to fetch client data:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchClientData();
@@ -258,6 +263,43 @@ const ClientProfile = ({
     });
     setShowProgramDetails(true);
   };
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
+        <div className="p-4 sm:p-6 border-b border-gray-200">
+          <div className="flex flex-col md:flex-row md:items-center">
+            <div className="flex items-center">
+              <div className="ml-4 space-y-2">
+                <Skeleton className="h-6 w-48" />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 md:mt-0 md:ml-auto flex gap-3">
+              <Skeleton className="h-9 w-36" />
+              <Skeleton className="h-9 w-40" />
+              <Skeleton className="h-9 w-36" />
+            </div>
+          </div>
+        </div>
+        <div className="border-b border-gray-200 px-6 py-4 flex gap-6">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-28" />
+        </div>
+        <div className="flex-1 p-4 sm:p-6 space-y-6">
+          <Skeleton className="h-24 w-full rounded-lg" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+            <Skeleton className="h-48 rounded-lg" />
+            <Skeleton className="h-48 rounded-lg" />
+            <Skeleton className="h-48 rounded-lg" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
       <div className="p-4 sm:p-6 border-b border-gray-200">
         {isEditingInfo ? (
@@ -294,11 +336,11 @@ const ClientProfile = ({
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={handleSaveInfo} disabled={isSavingInfo} className="inline-flex items-center px-3 py-2 bg-amber-600 text-white text-sm font-medium rounded-md hover:bg-amber-700 disabled:opacity-50">
+              <button onClick={handleSaveInfo} disabled={isSavingInfo} className="inline-flex items-center px-3 py-2 bg-amber-600 text-white text-sm font-medium rounded-full hover:bg-amber-700 disabled:opacity-50">
                 <SaveIcon size={14} className="mr-1" />
                 {isSavingInfo ? 'Saving...' : 'Save'}
               </button>
-              <button onClick={() => { setIsEditingInfo(false); setEditErrors({}); }} className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50">
+              <button onClick={() => { setIsEditingInfo(false); setEditErrors({}); }} className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-full text-gray-700 hover:bg-gray-50">
                 <XIcon size={14} className="mr-1" />
                 Cancel
               </button>
@@ -310,7 +352,7 @@ const ClientProfile = ({
               <div className="ml-4">
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl font-bold text-gray-900">{clientData.client_name}</h2>
-                  <button onClick={handleStartEditInfo} className="text-gray-400 hover:text-gray-600">
+                  <button onClick={handleStartEditInfo} className="text-gray-400 hover:text-gray-600 rounded-full">
                     <EditIcon size={15} />
                   </button>
                 </div>
@@ -327,18 +369,18 @@ const ClientProfile = ({
             </div>
             <div className="mt-4 md:mt-0 md:ml-auto flex flex-wrap gap-3">
               {clientData.phone && (
-                <a href={`tel:${clientData.phone}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                <a href={`tel:${clientData.phone}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50">
                   <PhoneIcon size={16} className="mr-2 text-gray-500" />
                   {formatPhone(clientData.phone)}
                 </a>
               )}
               {clientData.client_email && (
-                <a href={`mailto:${clientData.client_email}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                <a href={`mailto:${clientData.client_email}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50">
                   <MailIcon size={16} className="mr-2 text-gray-500" />
                   {clientData.client_email}
                 </a>
               )}
-              <button onClick={handleDeactivate} disabled={isDeactivating} className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50">
+              <button onClick={handleDeactivate} disabled={isDeactivating} className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-white bg-red-600 hover:bg-red-700 disabled:opacity-50">
                 {isDeactivating ? 'Deactivating...' : 'Deactivate Client'}
               </button>
             </div>
@@ -391,7 +433,7 @@ const ClientProfile = ({
                       </span>
                     </div>
                   </div>
-                  <button className="w-full mt-2 py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 border border-amber-200 rounded-md">
+                  <button className="w-full mt-2 py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 border border-amber-200 rounded-full">
                     <PlusIcon size={16} className="mr-1" />
                     Schedule New Session
                   </button>
@@ -400,7 +442,7 @@ const ClientProfile = ({
               <div className="bg-white border border-gray-200 rounded-lg p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium">Goals</h3>
-                  <button onClick={() => setShowGoalInput(v => !v)} className="text-gray-400 hover:text-gray-600">
+                  <button onClick={() => setShowGoalInput(v => !v)} className="text-gray-400 hover:text-gray-600 rounded-full">
                     <PlusIcon size={16} />
                   </button>
                 </div>
@@ -414,7 +456,7 @@ const ClientProfile = ({
                           </div>
                           <span className="text-sm">{goal}</span>
                         </div>
-                        <button onClick={() => handleRemoveGoal(index)} className="text-gray-400 hover:text-red-500">
+                        <button onClick={() => handleRemoveGoal(index)} className="text-gray-400 hover:text-red-500 rounded-full">
                           <Trash size={16} />
                         </button>
                       </div>
@@ -435,8 +477,8 @@ const ClientProfile = ({
                         className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                         autoFocus
                       />
-                      <button onClick={handleAddGoal} className="text-xs px-2 py-1 bg-amber-600 text-white rounded hover:bg-amber-700">Add</button>
-                      <button onClick={() => { setShowGoalInput(false); setNewGoal(''); }} className="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50">Cancel</button>
+                      <button onClick={handleAddGoal} className="text-xs px-2 py-1 bg-amber-600 text-white rounded-full hover:bg-amber-700">Add</button>
+                      <button onClick={() => { setShowGoalInput(false); setNewGoal(''); }} className="text-xs px-2 py-1 border border-gray-300 rounded-full hover:bg-gray-50">Cancel</button>
                     </div>
                   )}
                 </div>
@@ -460,7 +502,7 @@ const ClientProfile = ({
                           </div>
                         )}
                         <button
-                          className="mt-4 w-full py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-md"
+                          className="mt-4 w-full py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-full"
                           onClick={() => handleOpenProgramDetails(activeProgram)}
                         >
                           <ClipboardCheckIcon size={14} className="mr-1" />
@@ -485,16 +527,16 @@ const ClientProfile = ({
                             autoFocus
                           />
                           <div className="flex gap-2 justify-center">
-                            <button onClick={handleAddProgram} disabled={isAddingProgram} className="px-3 py-1.5 bg-amber-600 text-white text-xs font-medium rounded-md hover:bg-amber-700 disabled:opacity-50">
+                            <button onClick={handleAddProgram} disabled={isAddingProgram} className="px-3 py-1.5 bg-amber-600 text-white text-xs font-medium rounded-full hover:bg-amber-700 disabled:opacity-50">
                               {isAddingProgram ? 'Adding...' : 'Add'}
                             </button>
-                            <button onClick={() => { setShowAddProgram(false); setNewProgramName(''); }} className="px-3 py-1.5 border border-gray-300 text-xs rounded-md hover:bg-gray-50">
+                            <button onClick={() => { setShowAddProgram(false); setNewProgramName(''); }} className="px-3 py-1.5 border border-gray-300 text-xs rounded-full hover:bg-gray-50">
                               Cancel
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <button onClick={() => setShowAddProgram(true)} className="mt-3 inline-flex items-center px-3 py-1.5 text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-md">
+                        <button onClick={() => setShowAddProgram(true)} className="mt-3 inline-flex items-center px-3 py-1.5 text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-full">
                           <PlusIcon size={14} className="mr-1" />
                           Add Program
                         </button>
@@ -743,7 +785,7 @@ const ClientProfile = ({
                 </div>
                 <h3 className="text-lg font-medium">{selectedProgram.name}</h3>
               </div>
-              <button onClick={() => setShowProgramDetails(false)} className="p-2 rounded-md hover:bg-gray-100">
+              <button onClick={() => setShowProgramDetails(false)} className="p-2 rounded-full hover:bg-gray-100">
                 <XIcon size={20} className="text-gray-500" />
               </button>
             </div>
@@ -796,10 +838,10 @@ const ClientProfile = ({
               </div>
             </div>
             <div className="p-4 border-t border-gray-200 flex justify-end space-x-2">
-              <button onClick={() => setShowProgramDetails(false)} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700">
+              <button onClick={() => setShowProgramDetails(false)} className="px-4 py-2 border border-gray-300 rounded-full text-sm font-medium text-gray-700">
                 Close
               </button>
-              <button className="px-4 py-2 bg-amber-600 text-white rounded-md text-sm font-medium hover:bg-amber-700">
+              <button className="px-4 py-2 bg-amber-600 text-white rounded-full text-sm font-medium hover:bg-amber-700">
                 Edit Program
               </button>
             </div>
