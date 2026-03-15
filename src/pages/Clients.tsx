@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { SearchIcon, PlusIcon, FilterIcon, ChevronRightIcon, ArrowUpRightIcon, ClipboardCheckIcon, CalendarIcon, TagIcon, UserIcon, XIcon } from 'lucide-react';
+import { SearchIcon, PlusIcon, FilterIcon, ChevronLeftIcon, ChevronRightIcon, ArrowUpRightIcon, ClipboardCheckIcon, CalendarIcon, TagIcon, UserIcon, XIcon } from 'lucide-react';
 import ClientProfile from '../components/Clients/ClientProfile';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { clientApi } from '@/lib/clientApi';
 import { useUser } from '@/context/UserContext';
 
@@ -9,16 +10,20 @@ import { useUser } from '@/context/UserContext';
 const Clients = () => {
   const { userId } = useUser();
   const [clients, setClients] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!userId) return;
     const fetchClients = async () => {
       try {
+        setIsLoading(true);
         const backendClients = await clientApi.getClientsByTrainerId(userId);
         console.log('Fetched clients:', backendClients);
         setClients(backendClients);
       } catch (error) {
         console.error('Failed to fetch clients:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -27,6 +32,8 @@ const Clients = () => {
 
 
 
+  const PAGE_SIZE = 10;
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [selectedClient, setSelectedClient] = useState<number | null>(null);
@@ -68,6 +75,8 @@ const Clients = () => {
     const matchesStatus = statusFilter === 'all' || (client.isActive ? statusFilter === 'active' : statusFilter === 'inactive');
     return matchesSearch && matchesStatus;
   });
+  const totalPages = Math.max(1, Math.ceil(filteredClients.length / PAGE_SIZE));
+  const paginatedClients = filteredClients.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
   // Get the selected client data
   const clientData = selectedClient ? clients.find(c => c.id === selectedClient) : null;
   return <div className="h-full flex flex-col">
@@ -85,18 +94,18 @@ const Clients = () => {
         </div> : <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
           <div className="p-4 border-b border-gray-200 flex flex-wrap items-center justify-between gap-4">
             <div className="relative flex-1 max-w-md">
-              <input type="text" placeholder="Search clients..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" style={{ borderRadius: '24px' }} />
+              <input type="text" placeholder="Search clients..." value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" style={{ borderRadius: '24px' }} />
               <SearchIcon size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
             <div className="flex items-center space-x-2">
               <div className="bg-gray-100 p-1 rounded-md flex" style={{ borderRadius: '24px' }}>
-                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'all' ? 'bg-white shadow' : ''}`} onClick={() => setStatusFilter('all')}>
+                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'all' ? 'bg-white shadow' : ''}`} onClick={() => { setStatusFilter('all'); setCurrentPage(1); }}>
                   All
                 </Button>
-                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'active' ? 'bg-white shadow' : ''}`} onClick={() => setStatusFilter('active')}>
+                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'active' ? 'bg-white shadow' : ''}`} onClick={() => { setStatusFilter('active'); setCurrentPage(1); }}>
                   Active
                 </Button>
-                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'inactive' ? 'bg-white shadow' : ''}`} onClick={() => setStatusFilter('inactive')}>
+                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'inactive' ? 'bg-white shadow' : ''}`} onClick={() => { setStatusFilter('inactive'); setCurrentPage(1); }}>
                   Inactive
                 </Button>
               </div>
@@ -129,7 +138,28 @@ const Clients = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredClients.map(client => {
+                  {isLoading ? Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={i}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="ml-4 space-y-2">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-44" />
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Skeleton className="h-5 w-16 rounded-full" />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Skeleton className="h-4 w-24" />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Skeleton className="h-4 w-24" />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Skeleton className="h-4 w-28" />
+                      </td>
+                    </tr>
+                  )) : paginatedClients.map(client => {
                 // const currentProgram = client.current_program.find((p: { status: string; }) => p.status === 'in-progress');
                 return <tr key={client.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedClient(client.id)}>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -190,7 +220,7 @@ const Clients = () => {
               })}
                 </tbody>
               </table>
-              {filteredClients.length === 0 && <div className="text-center py-10">
+              {!isLoading && filteredClients.length === 0 && <div className="text-center py-10">
                   <UserIcon size={40} className="mx-auto text-gray-400" />
                   <h3 className="mt-2 text-sm font-medium text-gray-900">
                     No clients found
@@ -202,13 +232,45 @@ const Clients = () => {
                 </div>}
             </div>
           </div>
+          {!isLoading && filteredClients.length > 0 && (
+            <div className="px-6 py-3 border-t border-gray-200 flex items-center justify-between">
+              <p className="text-sm text-gray-500">
+                Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredClients.length)} of {filteredClients.length} clients
+              </p>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setCurrentPage(p => p - 1)}
+                  disabled={currentPage === 1}
+                  className="p-1.5 rounded-full hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeftIcon size={16} />
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-8 h-8 text-sm rounded-full ${page === currentPage ? 'bg-tan-600 text-white font-medium' : 'hover:bg-gray-100 text-gray-600'}`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage(p => p + 1)}
+                  disabled={currentPage === totalPages}
+                  className="p-1.5 rounded-full hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronRightIcon size={16} />
+                </button>
+              </div>
+            </div>
+          )}
         </div>}
       {showAddClient && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
             <div className="p-4 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-lg font-medium">Add New Client</h3>
-              <button onClick={() => { setShowAddClient(false); setAddClientError(null); }} className="p-1 rounded hover:bg-gray-100">
+              <button onClick={() => { setShowAddClient(false); setAddClientError(null); }} className="p-1 rounded-full hover:bg-gray-100">
                 <XIcon size={20} className="text-gray-500" />
               </button>
             </div>
@@ -232,10 +294,10 @@ const Clients = () => {
               </div>
             </div>
             <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
-              <button onClick={() => { setShowAddClient(false); setAddClientError(null); }} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+              <button onClick={() => { setShowAddClient(false); setAddClientError(null); }} className="px-4 py-2 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50">
                 Cancel
               </button>
-              <button onClick={handleAddClientSubmit} disabled={isSubmitting} className="px-4 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700 disabled:opacity-50">
+              <button onClick={handleAddClientSubmit} disabled={isSubmitting} className="px-4 py-2 bg-tan-600 text-white rounded-full text-sm font-medium hover:bg-tan-700 disabled:opacity-50">
                 {isSubmitting ? 'Adding...' : 'Add Client'}
               </button>
             </div>
