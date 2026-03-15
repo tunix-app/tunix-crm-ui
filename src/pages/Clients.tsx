@@ -144,6 +144,11 @@ const Clients = () => {
                               <div className="text-sm text-gray-500">
                                 {client.client_email}
                               </div>
+                              {client.phone && (
+                                <div className="text-sm text-gray-400">
+                                  {client.phone.replace(/\D/g, '').replace(/^1?(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3') || client.phone}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </td>

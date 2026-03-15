@@ -90,10 +90,22 @@ const ClientProfile = ({
   onDeactivate,
 }: ClientProfileProps) => {
 
+
   const [clientData, setClientData] = useState<ClientData>(client);
   const [isDeactivating, setIsDeactivating] = useState(false);
   const [newGoal, setNewGoal] = useState('');
   const [showGoalInput, setShowGoalInput] = useState(false);
+  const [isEditingInfo, setIsEditingInfo] = useState(false);
+  const [isSavingInfo, setIsSavingInfo] = useState(false);
+  const [editForm, setEditForm] = useState({
+    client_name: '',
+    client_email: '',
+    phone: '',
+  });
+  const [editErrors, setEditErrors] = useState<{ client_email?: string; phone?: string }>({});
+  const [showAddProgram, setShowAddProgram] = useState(false);
+  const [newProgramName, setNewProgramName] = useState('');
+  const [isAddingProgram, setIsAddingProgram] = useState(false);
 
 
   useEffect(() => {
@@ -101,7 +113,7 @@ const ClientProfile = ({
       try {
         const backendClient = await clientApi.getClientById(client.id);
         console.log('Fetched client data:', backendClient);
-        setClientData(backendClient);
+        setClientData({ ...backendClient, phone: backendClient.phone ?? backendClient.client_phone ?? '' });
       } catch (error) {
         console.error('Failed to fetch client data:', error);
       }
@@ -149,9 +161,80 @@ const ClientProfile = ({
     }
   };
 
+  const handleAddProgram = async () => {
+    const name = newProgramName.trim();
+    if (!name) return;
+    const newProgram: Program = {
+      id: Date.now(),
+      name,
+      status: 'in-progress',
+      progress: 0,
+    };
+    const updatedPrograms = [...(clientData.programs || []), newProgram];
+    try {
+      setIsAddingProgram(true);
+      await clientApi.updateClient(clientData.id, { programs: updatedPrograms });
+      setClientData(prev => ({ ...prev, programs: updatedPrograms }));
+      setNewProgramName('');
+      setShowAddProgram(false);
+    } catch (err) {
+      console.error('Failed to add program:', err);
+      alert('Failed to add program. Please try again.');
+    } finally {
+      setIsAddingProgram(false);
+    }
+  };
+
+  const handleStartEditInfo = () => {
+    setEditForm({
+      client_name: clientData.client_name,
+      client_email: clientData.client_email,
+      phone: clientData.phone,
+    });
+    setIsEditingInfo(true);
+  };
+
+  const handleSaveInfo = async () => {
+    const errors: { client_email?: string; phone?: string } = {};
+    if (editForm.client_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editForm.client_email)) {
+      errors.client_email = 'Enter a valid email address.';
+    }
+    const digits = editForm.phone.replace(/\D/g, '');
+    if (editForm.phone && !(digits.length === 10 || (digits.length === 11 && digits[0] === '1'))) {
+      errors.phone = 'Enter a 10-digit phone number.';
+    }
+    if (Object.keys(errors).length) {
+      setEditErrors(errors);
+      return;
+    }
+    setEditErrors({});
+    try {
+      setIsSavingInfo(true);
+      await clientApi.updateClient(clientData.id, {
+        client_name: editForm.client_name,
+        client_email: editForm.client_email,
+        client_phone: editForm.phone.replace(/\D/g, ''),
+      });
+      setClientData(prev => ({ ...prev, ...editForm }));
+      setIsEditingInfo(false);
+    } catch (err) {
+      console.error('Failed to update client info:', err);
+      alert('Failed to update client info. Please try again.');
+    } finally {
+      setIsSavingInfo(false);
+    }
+  };
+
   const [activeTab, setActiveTab] = useState<'overview' | 'programs' | 'metrics' | 'notes'>('overview');
   const [showProgramDetails, setShowProgramDetails] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
+  const formatPhone = (raw: string): string => {
+    const digits = raw.replace(/\D/g, '');
+    if (digits.length === 10) return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+    if (digits.length === 11 && digits[0] === '1') return `${digits.slice(1, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+    return raw;
+  };
+
   // Format date for display
   const formatDate = (dateString: string | null): string => {
     if (!dateString) return 'Not scheduled';
@@ -177,38 +260,90 @@ const ClientProfile = ({
   };
   return <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
       <div className="p-4 sm:p-6 border-b border-gray-200">
-        <div className="flex flex-col md:flex-row md:items-center">
-          <div className="flex items-center">
-            {/* <div className="h-16 w-16 md:h-20 md:w-20 flex-shrink-0">
-              <img className="h-full w-full rounded-full object-cover" src={client.profileImage} alt={client.client_name} />
-            </div> */}
-            <div className="ml-4">
-              <h2 className="text-xl font-bold text-gray-900">{clientData.client_name}</h2>
-              <div className="flex flex-wrap items-center mt-1 text-sm text-gray-500">
-                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full mr-2 ${clientData.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                  {clientData.isActive ? 'Active' : 'Inactive'}
-                </span>
-                <span className="flex items-center mr-3">
-                  <CalendarIcon size={14} className="mr-1" />
-                  Joined {formatDate(clientData.last_session) /*Change into created_at once backend has implemented it */ } 
-                </span>
+        {isEditingInfo ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={editForm.client_name}
+                  onChange={e => setEditForm(f => ({ ...f, client_name: e.target.value }))}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={editForm.client_email}
+                  onChange={e => { setEditForm(f => ({ ...f, client_email: e.target.value })); setEditErrors(err => ({ ...err, client_email: undefined })); }}
+                  className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 ${editErrors.client_email ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-amber-500'}`}
+                />
+                {editErrors.client_email && <p className="mt-1 text-xs text-red-500">{editErrors.client_email}</p>}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Phone</label>
+                <input
+                  type="tel"
+                  value={editForm.phone}
+                  onChange={e => { setEditForm(f => ({ ...f, phone: e.target.value })); setEditErrors(err => ({ ...err, phone: undefined })); }}
+                  className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 ${editErrors.phone ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-amber-500'}`}
+                />
+                {editErrors.phone && <p className="mt-1 text-xs text-red-500">{editErrors.phone}</p>}
               </div>
             </div>
+            <div className="flex gap-2">
+              <button onClick={handleSaveInfo} disabled={isSavingInfo} className="inline-flex items-center px-3 py-2 bg-amber-600 text-white text-sm font-medium rounded-md hover:bg-amber-700 disabled:opacity-50">
+                <SaveIcon size={14} className="mr-1" />
+                {isSavingInfo ? 'Saving...' : 'Save'}
+              </button>
+              <button onClick={() => { setIsEditingInfo(false); setEditErrors({}); }} className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50">
+                <XIcon size={14} className="mr-1" />
+                Cancel
+              </button>
+            </div>
           </div>
-          <div className="mt-4 md:mt-0 md:ml-auto flex flex-wrap gap-3">
-            <a href={`tel:${clientData.phone}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-              <PhoneIcon size={16} className="mr-2 text-gray-500" />
-              {clientData.phone}
-            </a>
-            <a href={`mailto:${clientData.client_email}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-              <MailIcon size={16} className="mr-2 text-gray-500" />
-              Email
-            </a>
-            <button onClick={handleDeactivate} disabled={isDeactivating} className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50">
-              {isDeactivating ? 'Deactivating...' : 'Deactivate Client'}
-            </button>
+        ) : (
+          <div className="flex flex-col md:flex-row md:items-center">
+            <div className="flex items-center">
+              <div className="ml-4">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-bold text-gray-900">{clientData.client_name}</h2>
+                  <button onClick={handleStartEditInfo} className="text-gray-400 hover:text-gray-600">
+                    <EditIcon size={15} />
+                  </button>
+                </div>
+                <div className="flex flex-wrap items-center mt-1 text-sm text-gray-500">
+                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full mr-2 ${clientData.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {clientData.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                  <span className="flex items-center mr-3">
+                    <CalendarIcon size={14} className="mr-1" />
+                    Joined {formatDate(clientData.last_session)}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 md:mt-0 md:ml-auto flex flex-wrap gap-3">
+              {clientData.phone && (
+                <a href={`tel:${clientData.phone}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                  <PhoneIcon size={16} className="mr-2 text-gray-500" />
+                  {formatPhone(clientData.phone)}
+                </a>
+              )}
+              {clientData.client_email && (
+                <a href={`mailto:${clientData.client_email}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                  <MailIcon size={16} className="mr-2 text-gray-500" />
+                  {clientData.client_email}
+                </a>
+              )}
+              <button onClick={handleDeactivate} disabled={isDeactivating} className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50">
+                {isDeactivating ? 'Deactivating...' : 'Deactivate Client'}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div className="border-b border-gray-200 overflow-x-auto">
         <div className="flex whitespace-nowrap">
@@ -306,48 +441,68 @@ const ClientProfile = ({
                   )}
                 </div>
               </div>
-              {/* <div className="bg-white border border-gray-200 rounded-lg p-5">
+              <div className="bg-white border border-gray-200 rounded-lg p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium">Current Program</h3>
-                  <button className="text-amber-600 text-sm hover:text-amber-800">
-                    View All
-                  </button>
                 </div>
-                {client.programs.find(p => p.status === 'in-progress') ? <div>
-                    <div className="font-medium">
-                      {client.programs.find(p => p.status === 'in-progress')?.name}
-                    </div>
-                    <div className="flex items-center mt-2">
-                      <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-                        <div className="bg-amber-600 h-2.5 rounded-full" style={{
-                    width: `${client.programs.find(p => p.status === 'in-progress')?.progress}%`
-                  }}></div>
+                {(() => {
+                  const activeProgram = clientData.programs?.find(p => p.status === 'in-progress');
+                  if (activeProgram) {
+                    return (
+                      <div>
+                        <div className="font-medium">{activeProgram.name}</div>
+                        {activeProgram.progress !== undefined && (
+                          <div className="flex items-center mt-2">
+                            <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                              <div className="bg-amber-600 h-2.5 rounded-full" style={{ width: `${activeProgram.progress}%` }} />
+                            </div>
+                            <span className="text-sm text-gray-600 whitespace-nowrap">{activeProgram.progress}%</span>
+                          </div>
+                        )}
+                        <button
+                          className="mt-4 w-full py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-md"
+                          onClick={() => handleOpenProgramDetails(activeProgram)}
+                        >
+                          <ClipboardCheckIcon size={14} className="mr-1" />
+                          View Details
+                        </button>
                       </div>
-                      <span className="text-sm text-gray-600">
-                        {client.programs.find(p => p.status === 'in-progress')?.progress}
-                        %
-                      </span>
+                    );
+                  }
+                  return (
+                    <div className="text-center py-4">
+                      <ClipboardCheckIcon size={24} className="mx-auto text-gray-400" />
+                      <p className="mt-2 text-sm text-gray-500">No active program</p>
+                      {showAddProgram ? (
+                        <div className="mt-3 flex flex-col gap-2">
+                          <input
+                            type="text"
+                            value={newProgramName}
+                            onChange={e => setNewProgramName(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && handleAddProgram()}
+                            placeholder="Program name..."
+                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500"
+                            autoFocus
+                          />
+                          <div className="flex gap-2 justify-center">
+                            <button onClick={handleAddProgram} disabled={isAddingProgram} className="px-3 py-1.5 bg-amber-600 text-white text-xs font-medium rounded-md hover:bg-amber-700 disabled:opacity-50">
+                              {isAddingProgram ? 'Adding...' : 'Add'}
+                            </button>
+                            <button onClick={() => { setShowAddProgram(false); setNewProgramName(''); }} className="px-3 py-1.5 border border-gray-300 text-xs rounded-md hover:bg-gray-50">
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button onClick={() => setShowAddProgram(true)} className="mt-3 inline-flex items-center px-3 py-1.5 text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-md">
+                          <PlusIcon size={14} className="mr-1" />
+                          Add Program
+                        </button>
+                      )}
                     </div>
-                    <div className="flex justify-between mt-4">
-                      <button className="py-2 px-3 flex items-center justify-center text-sm text-gray-600 hover:text-gray-800 bg-gray-50 rounded-md">
-                        <EditIcon size={14} className="mr-1" />
-                        Edit
-                      </button>
-                      <button className="py-2 px-3 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-md" onClick={() => handleOpenProgramDetails(client.programs.find(p => p.status === 'in-progress')!)}>
-                        <ClipboardCheckIcon size={14} className="mr-1" />
-                        View Details
-                      </button>
-                    </div>
-                  </div> : <div className="text-center py-4">
-                    <ClipboardCheckIcon size={24} className="mx-auto text-gray-400" />
-                    <p className="mt-2 text-sm text-gray-500">
-                      No active program
-                    </p>
-                    <button className="mt-2 py-2 px-4 text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-md">
-                      Assign Program
-                    </button>
-                  </div>}
-              </div> */}
+                  );
+                })()}
+              </div>
             </div>
             {/* <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-200">
