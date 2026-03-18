@@ -1,88 +1,103 @@
-import React, { useState } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, FilterIcon } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, addDays, addWeeks, addMonths } from 'date-fns';
 import CalendarView from '../components/Calendar/CalendarView';
-import NewSession from '@/components/Calendar/scheduling/newSessionDialog';
+import type { Session } from '../components/Calendar/CalendarView';
+import { NewSession } from '@/components/Calendar/scheduling/newSessionDialog';
+import { sessionApi } from '@/lib/sessionApi';
+import { useUser } from '@/context/UserContext';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 const Calendar = () => {
+  const { userId } = useUser();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'day' | 'week' | 'month'>('week');
-  const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-  const navigatePrevious = () => {
-    const newDate = new Date(currentDate);
+  const [sessions, setSessions] = useState<Session[]>([]);
+
+  const fetchSessions = useCallback(async () => {
+    if (!userId) return;
+    let start: Date;
+    let end: Date;
     if (view === 'day') {
-      newDate.setDate(newDate.getDate() - 1);
+      start = new Date(currentDate); start.setHours(0, 0, 0, 0);
+      end   = new Date(currentDate); end.setHours(23, 59, 59, 999);
     } else if (view === 'week') {
-      newDate.setDate(newDate.getDate() - 7);
+      start = startOfWeek(currentDate, { weekStartsOn: 1 });
+      end   = endOfWeek(currentDate, { weekStartsOn: 1 });
     } else {
-      newDate.setMonth(newDate.getMonth() - 1);
+      start = startOfMonth(currentDate);
+      end   = endOfMonth(currentDate);
     }
-    setCurrentDate(newDate);
-  };
-  const navigateNext = () => {
-    const newDate = new Date(currentDate);
-    if (view === 'day') {
-      newDate.setDate(newDate.getDate() + 1);
-    } else if (view === 'week') {
-      newDate.setDate(newDate.getDate() + 7);
-    } else {
-      newDate.setMonth(newDate.getMonth() + 1);
+    try {
+      const data = await sessionApi.getSessionByTimeRange(userId, {
+        start_range: start.toISOString(),
+        end_range: end.toISOString(),
+      });
+      const list = Array.isArray(data) ? data : (data as any)?.sessions ?? (data as any)?.data ?? [];
+      setSessions(list);
+    } catch {
+      setSessions([]);
     }
-    setCurrentDate(newDate);
-  };
-  const navigateToday = () => {
-    setCurrentDate(new Date());
-  };
-  return <div className="h-full flex flex-col">
+  }, [userId, currentDate, view]);
+
+  useEffect(() => { fetchSessions(); }, [fetchSessions]);
+
+  const formatDate = (date: Date): string =>
+    date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  return (
+    <div className="h-full flex flex-col">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Calendar</h1>
-        {/* <p className="text-gray-600">
-          Manage your schedule and sessions
-        </p> */}
       </div>
       <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
         <div className="p-4 border-b flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center">
-            <button onClick={navigateToday} className="px-4 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700" style={{ borderRadius: '24px' }}>
+            <Button onClick={() => setCurrentDate(new Date())} variant="blue" size="sm">
               Today
-            </button>
+            </Button>
             <div className="flex items-center mx-4">
-              <button onClick={navigatePrevious} className="p-1 rounded-full hover:bg-gray-100">
-                <ChevronLeftIcon size={20} />
+              <button
+                onClick={() => {
+                  if (view === 'day') setCurrentDate(d => addDays(d, -1));
+                  else if (view === 'week') setCurrentDate(d => addWeeks(d, -1));
+                  else setCurrentDate(d => addMonths(d, -1));
+                }}
+                className="p-1 rounded-full hover:bg-gray-100"
+              >
+                <ChevronLeft size={20} />
               </button>
               <h2 className="mx-4 font-medium">{formatDate(currentDate)}</h2>
-              <button onClick={navigateNext} className="p-1 rounded-full hover:bg-gray-100">
-                <ChevronRightIcon size={20} />
+              <button
+                onClick={() => {
+                  if (view === 'day') setCurrentDate(d => addDays(d, 1));
+                  else if (view === 'week') setCurrentDate(d => addWeeks(d, 1));
+                  else setCurrentDate(d => addMonths(d, 1));
+                }}
+                className="p-1 rounded-full hover:bg-gray-100"
+              >
+                <ChevronRight size={20} />
               </button>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="bg-gray-100 p-1 rounded-md flex" style={{ borderRadius: '24px' }}>
-              <Button className={`px-3 py-1 text-sm rounded-md ${view === 'day' ? 'bg-white shadow' : ''}`} onClick={() => setView('day')}>
-                Day
-              </Button>
-              <Button className={`px-3 py-1 text-sm rounded-md ${view === 'week' ? 'bg-white shadow' : ''}`} onClick={() => setView('week')}>
-                Week
-              </Button>
-              <Button className={`px-3 py-1 text-sm rounded-md ${view === 'month' ? 'bg-white shadow' : ''}`} onClick={() => setView('month')}>
-                Month
-              </Button>
-            </div>
-            <Button className="p-2 rounded-md hover:bg-gray-100">
-              <FilterIcon size={18} />
-            </Button>
-            <NewSession />
+          <div className="flex items-center gap-3">
+            <Tabs value={view} onValueChange={(v) => setView(v as typeof view)}>
+              <TabsList>
+                <TabsTrigger value="day">Day</TabsTrigger>
+                <TabsTrigger value="week">Week</TabsTrigger>
+                <TabsTrigger value="month">Month</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <NewSession onSuccess={fetchSessions} />
           </div>
         </div>
         <div className="flex-1 overflow-y-auto">
-          <CalendarView currentDate={currentDate} view={view} />
+          <CalendarView currentDate={currentDate} view={view} sessions={sessions} />
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Calendar;
