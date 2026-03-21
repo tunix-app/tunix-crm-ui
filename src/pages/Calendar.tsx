@@ -4,6 +4,7 @@ import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, addDays, addWeeks, ad
 import CalendarView from '../components/Calendar/CalendarView';
 import type { Session } from '../components/Calendar/CalendarView';
 import { NewSession } from '@/components/Calendar/scheduling/newSessionDialog';
+import { EditSessionDialog } from '@/components/Calendar/scheduling/editSessionDialog';
 import { sessionApi } from '@/lib/sessionApi';
 import { useUser } from '@/context/UserContext';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'day' | 'week' | 'month'>('week');
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [editSessionId, setEditSessionId] = useState<string | null>(null);
 
   const fetchSessions = useCallback(async () => {
     if (!userId) return;
@@ -92,8 +94,19 @@ const Calendar = () => {
             <NewSession onSuccess={fetchSessions} />
           </div>
         </div>
+        <EditSessionDialog
+          sessionId={editSessionId}
+          open={editSessionId !== null}
+          onClose={() => setEditSessionId(null)}
+          onSuccess={fetchSessions}
+        />
         <div className="flex-1 overflow-y-auto">
-          <CalendarView currentDate={currentDate} view={view} sessions={sessions} />
+          <CalendarView
+            currentDate={currentDate}
+            view={view}
+            sessions={sessions}
+            onSessionClick={setEditSessionId}
+          />
         </div>
       </div>
     </div>

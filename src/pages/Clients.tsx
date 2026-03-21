@@ -4,6 +4,7 @@ import ClientProfile from '../components/Clients/ClientProfile';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { clientApi } from '@/lib/clientApi';
+import { sessionApi } from '@/lib/sessionApi';
 import { useUser } from '@/context/UserContext';
 
 
@@ -18,8 +19,23 @@ const Clients = () => {
       try {
         setIsLoading(true);
         const backendClients = await clientApi.getClientsByTrainerId(userId);
-        console.log('Fetched clients:', backendClients);
-        setClients(backendClients);
+        const now = new Date();
+
+        const enriched = await Promise.all(
+          backendClients.map(async (client: any) => {
+            const sessions = await sessionApi.getSessionsByClientId(client.client_id).catch(() => []);
+            const past = (sessions ?? [])
+              .filter((s: any) => new Date(s.start_date ?? s.start_time) < now)
+              .sort((a: any, b: any) => new Date(b.start_date ?? b.start_time).getTime() - new Date(a.start_date ?? a.start_time).getTime());
+            const future = (sessions ?? [])
+              .filter((s: any) => new Date(s.start_date ?? s.start_time) > now)
+              .sort((a: any, b: any) => new Date(a.start_date ?? a.start_time).getTime() - new Date(b.start_date ?? b.start_time).getTime());
+            const dateOf = (s: any) => s?.start_date ?? s?.start_time ?? null;
+            return { ...client, last_session: dateOf(past[0]), next_session: dateOf(future[0]) };
+          })
+        );
+
+        setClients(enriched);
       } catch (error) {
         console.error('Failed to fetch clients:', error);
       } finally {
@@ -70,6 +86,23 @@ const Clients = () => {
       setIsSubmitting(false);
     }
   };
+  const formatSessionDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return '—';
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return '—';
+    return `${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} · ${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+  };
+
+  const displayLastSession = (dateString: string | null | undefined): string => {
+    if (!dateString) return '—';
+    return new Date(dateString) < new Date() ? formatSessionDate(dateString) : '—';
+  };
+
+  const displayNextSession = (dateString: string | null | undefined): string => {
+    if (!dateString) return 'Not scheduled';
+    return new Date(dateString) > new Date() ? formatSessionDate(dateString) : 'Not scheduled';
+  };
+
   const filteredClients = clients.filter(client => {
     const matchesSearch = client.client_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || (client.isActive ? statusFilter === 'active' : statusFilter === 'inactive');
@@ -188,10 +221,10 @@ const Clients = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {client.last_session ? new Date(client.last_session).toLocaleDateString() : '-'}
+                          {displayLastSession(client.last_session)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {client.next_session ? new Date(client.next_session).toLocaleDateString() : '-'}
+                          {displayNextSession(client.next_session)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {client.current_program_name || '-'}

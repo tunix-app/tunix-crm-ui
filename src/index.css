@@ -3,3 +3,39 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 /* DO NOT DELETE THESE TAILWIND IMPORTS, OTHERWISE THE STYLING WILL NOT RENDER AT ALL */
+
+/* ── shadcn/ui CSS variables ── */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --radius: 0.5rem;
+}
+
+/* ── react-big-calendar overrides ── */
+.rbc-wrapper .rbc-toolbar { display: none; }
+.rbc-wrapper .rbc-event { background: transparent; border: none; padding: 0; box-shadow: none; }
+.rbc-wrapper .rbc-event.rbc-selected { background: transparent; outline: none; }
+.rbc-wrapper .rbc-event:focus { outline: none; }
+.rbc-wrapper .rbc-today { background-color: #eff6ff; }
+.rbc-wrapper .rbc-header { font-size: 0.75rem; font-weight: 600; padding: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; border-bottom: 1px solid #e5e7eb; }
+.rbc-wrapper .rbc-time-gutter .rbc-timeslot-group { border: none; }
+.rbc-wrapper .rbc-time-slot { font-size: 0.7rem; color: #9ca3af; }
+.rbc-wrapper .rbc-allday-cell { display: none; }
+.rbc-wrapper .rbc-time-header-cell .rbc-header { border-bottom: none; }
