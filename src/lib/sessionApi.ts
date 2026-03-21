@@ -15,4 +15,5 @@ export const sessionApi = {
         body: JSON.stringify(updatedSessionData),
     }),
     cancelSession: (sessionId: string) => apiRequest<void>(`/session/${sessionId}`, { method: 'DELETE' }),
+    getSessionsByClientId: (clientId: string) => apiRequest<any[]>(`/session/client/${clientId}`),
 }

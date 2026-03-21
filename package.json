@@ -23,6 +23,7 @@
     "next": "14.2.35",
     "next-themes": "0.2.0",
     "react": "^18.3.1",
+    "react-big-calendar": "^1.19.4",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@types/node": "^20.11.18",
     "@types/react": "^18.3.1",
+    "@types/react-big-calendar": "^1.16.3",
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",

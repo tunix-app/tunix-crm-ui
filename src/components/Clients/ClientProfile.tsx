@@ -3,6 +3,8 @@ import { CalendarIcon, PhoneIcon, MailIcon, ClipboardCheckIcon, TagIcon, EditIco
 import ProgressChart from '../Analytics/ProgressChart';
 import ClientNotes from '../Analytics/ClientNotes';
 import { clientApi } from '@/lib/clientApi';
+import { sessionApi } from '@/lib/sessionApi';
+import { NewSession } from '@/components/Calendar/scheduling/newSessionDialog';
 import { Link } from 'react-router-dom';
 import ClientWaiver from './ClientWaiver';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -114,9 +116,25 @@ const ClientProfile = ({
     const fetchClientData = async () => {
       try {
         setIsLoading(true);
-        const backendClient = await clientApi.getClientById(client.id);
-        console.log('Fetched client data:', backendClient);
-        setClientData({ ...backendClient, phone: backendClient.phone ?? backendClient.client_phone ?? '' });
+        const backendClient = await clientApi.getClientById(client.id)
+        const sessions = await sessionApi.getSessionsByClientId(backendClient.client_id).catch(() => [] as any[])
+
+        const now = new Date();
+        const pastSessions = (sessions ?? [])
+          .filter((s: any) => new Date(s.start_date ?? s.start_time) < now)
+          .sort((a: any, b: any) => new Date(b.start_date ?? b.start_time).getTime() - new Date(a.start_date ?? a.start_time).getTime());
+        const futureSessions = (sessions ?? [])
+          .filter((s: any) => new Date(s.start_date ?? s.start_time) > now)
+          .sort((a: any, b: any) => new Date(a.start_date ?? a.start_time).getTime() - new Date(b.start_date ?? b.start_time).getTime());
+
+        const dateOf = (s: any) => s?.start_date ?? s?.start_time ?? null;
+
+        setClientData({
+          ...backendClient,
+          phone: backendClient.phone ?? backendClient.client_phone ?? '',
+          last_session: dateOf(pastSessions[0]),
+          next_session: dateOf(futureSessions[0]),
+        });
       } catch (error) {
         console.error('Failed to fetch client data:', error);
       } finally {
@@ -240,14 +258,22 @@ const ClientProfile = ({
     return raw;
   };
 
-  // Format date for display
-  const formatDate = (dateString: string | null): string => {
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return '—';
+    const d = new Date(dateString);
+    return `${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} · ${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+  };
+
+  const formatLastSession = (dateString: string | null | undefined): string => {
+    if (!dateString) return 'None';
+    const date = new Date(dateString);
+    return date < new Date() ? formatDate(dateString) : 'None';
+  };
+
+  const formatNextSession = (dateString: string | null | undefined): string => {
     if (!dateString) return 'Not scheduled';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric'
-    });
+    const date = new Date(dateString);
+    return date > new Date() ? formatDate(dateString) : 'Not scheduled';
   };
   // Get exercises for a program
   const getProgramExercises = (programId: number) => {
@@ -420,7 +446,7 @@ const ClientProfile = ({
                     <div className="flex items-center mt-1">
                       <CalendarIcon size={16} className="text-gray-400 mr-2" />
                       <span className="font-medium">
-                        {formatDate(clientData.last_session)}
+                        {formatLastSession(clientData.last_session)}
                       </span>
                     </div>
                   </div>
@@ -429,14 +455,23 @@ const ClientProfile = ({
                     <div className="flex items-center mt-1">
                       <CalendarIcon size={16} className="text-gray-400 mr-2" />
                       <span className="font-medium">
-                        {formatDate(clientData.next_session)}
+                        {formatNextSession(clientData.next_session)}
                       </span>
                     </div>
                   </div>
-                  <button className="w-full mt-2 py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 border border-amber-200 rounded-full">
-                    <PlusIcon size={16} className="mr-1" />
-                    Schedule New Session
-                  </button>
+                  <NewSession
+                    preselectedClient={{
+                      id: clientData.id,
+                      client_name: clientData.client_name,
+                      client_email: clientData.client_email,
+                    }}
+                    trigger={
+                      <button type="button" className="w-full mt-2 py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 border border-amber-200 rounded-full">
+                        <PlusIcon size={16} className="mr-1" />
+                        Schedule New Session
+                      </button>
+                    }
+                  />
                 </div>
               </div>
               <div className="bg-white border border-gray-200 rounded-lg p-5">

@@ -147,12 +147,18 @@ function DateTimePicker({ label, required, value, onChange }: DateTimePickerProp
 const EMPTY_FORM = { sessionType: "", description: "" }
 const EMPTY_DT = { date: undefined as Date | undefined, time: "" }
 
-export function NewSession({ onSuccess }: { onSuccess?: () => void } = {}) {
+interface NewSessionProps {
+  onSuccess?: () => void
+  preselectedClient?: Client
+  trigger?: React.ReactNode
+}
+
+export function NewSession({ onSuccess, preselectedClient, trigger }: NewSessionProps = {}) {
   const { userId } = useUser()
 
   const [open, setOpen] = useState(false)
   const [clients, setClients] = useState<Client[]>([])
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const [selectedClient, setSelectedClient] = useState<Client | null>(preselectedClient ?? null)
   const [clientPopoverOpen, setClientPopoverOpen] = useState(false)
 
   const [toolsUsed, setToolsUsed] = useState<string[]>([])
@@ -185,7 +191,7 @@ export function NewSession({ onSuccess }: { onSuccess?: () => void } = {}) {
   }
 
   function handleReset() {
-    setSelectedClient(null)
+    setSelectedClient(preselectedClient ?? null)
     setToolsUsed([])
     setForm(EMPTY_FORM)
     setStartDT(EMPTY_DT)
@@ -257,15 +263,12 @@ export function NewSession({ onSuccess }: { onSuccess?: () => void } = {}) {
   return (
     <Dialog open={open} onOpenChange={(o: boolean) => { setOpen(o); if (!o) handleReset() }}>
       <DialogTrigger asChild>
-        <Button
-          variant="blue"
-          size="sm"
-          className="flex items-center"
-          style={{ borderRadius: "9999px" }}
-        >
-          <Plus size={16} className="mr-1" />
-          New Session
-        </Button>
+        {trigger ?? (
+          <Button variant="blue" size="sm" className="flex items-center" style={{ borderRadius: "9999px" }}>
+            <Plus size={16} className="mr-1" />
+            New Session
+          </Button>
+        )}
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[620px] max-h-[90vh] overflow-y-auto">
@@ -278,7 +281,14 @@ export function NewSession({ onSuccess }: { onSuccess?: () => void } = {}) {
           <div className="grid gap-5 py-4">
 
             {/* ── Client ── */}
-            <div className="grid gap-2">
+            {preselectedClient && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-full text-sm text-gray-700">
+                <span className="font-medium">{preselectedClient.client_name}</span>
+                <span className="text-gray-400">·</span>
+                <span className="text-gray-500">{preselectedClient.client_email}</span>
+              </div>
+            )}
+            {!preselectedClient && <div className="grid gap-2">
               <Label className="text-sm font-semibold">
                 Client <span className="text-destructive">*</span>
               </Label>
@@ -320,7 +330,7 @@ export function NewSession({ onSuccess }: { onSuccess?: () => void } = {}) {
                   </div>
                 </PopoverContent>
               </Popover>
-            </div>
+            </div>}
 
             {/* ── Session Type ── */}
             <div className="grid gap-2">
