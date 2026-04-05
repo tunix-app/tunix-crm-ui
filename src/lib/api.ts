@@ -36,8 +36,14 @@ export async function apiRequest<T>(
       throw new ApiError(response.status, `HTTP error! status: ${response.status}`);
     }
     
-    const data = await response.json();
-    return data;
+    const text = await response.text();
+    let data: unknown;
+    try {
+      data = text ? JSON.parse(text) : undefined;
+    } catch {
+      data = undefined;
+    }
+    return data as T;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;

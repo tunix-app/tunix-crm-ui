@@ -19,6 +19,7 @@ interface CalendarViewProps {
   view: 'day' | 'week' | 'month'
   sessions: Session[]
   onSessionClick?: (sessionId: string) => void
+  onSlotClick?: (start: Date, end: Date) => void
 }
 
 const localizer = dateFnsLocalizer({
@@ -45,7 +46,7 @@ interface RBCEvent {
   resource: Session
 }
 
-const CalendarView = ({ currentDate, view, sessions = [], onSessionClick }: CalendarViewProps) => {
+const CalendarView = ({ currentDate, view, sessions = [], onSessionClick, onSlotClick }: CalendarViewProps) => {
   const cbRef = useRef(onSessionClick)
   cbRef.current = onSessionClick
 
@@ -103,6 +104,11 @@ const CalendarView = ({ currentDate, view, sessions = [], onSessionClick }: Cale
     },
   []) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const handleSelectSlot = useCallback(({ start, end }: { start: Date; end: Date }) => {
+    if (start < new Date()) return
+    onSlotClick?.(start, end)
+  }, [onSlotClick])
+
   return (
     <div className="h-full rbc-wrapper">
       <Calendar
@@ -122,6 +128,8 @@ const CalendarView = ({ currentDate, view, sessions = [], onSessionClick }: Cale
           timeGutterFormat: (date: Date) => format(date, 'h a'),
           eventTimeRangeFormat: () => '',
         }}
+        selectable
+        onSelectSlot={handleSelectSlot}
         popup
       />
     </div>
