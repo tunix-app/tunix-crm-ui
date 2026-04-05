@@ -151,12 +151,18 @@ interface NewSessionProps {
   onSuccess?: () => void
   preselectedClient?: Client
   trigger?: React.ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  initialStartDate?: Date
+  initialStartTime?: string
 }
 
-export function NewSession({ onSuccess, preselectedClient, trigger }: NewSessionProps = {}) {
+export function NewSession({ onSuccess, preselectedClient, trigger, open: externalOpen, onOpenChange: externalOnOpenChange, initialStartDate, initialStartTime }: NewSessionProps = {}) {
   const { userId } = useUser()
 
-  const [open, setOpen] = useState(false)
+  const isControlled = externalOpen !== undefined
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = isControlled ? externalOpen : internalOpen
   const [clients, setClients] = useState<Client[]>([])
   const [selectedClient, setSelectedClient] = useState<Client | null>(preselectedClient ?? null)
   const [clientPopoverOpen, setClientPopoverOpen] = useState(false)
@@ -167,6 +173,12 @@ export function NewSession({ onSuccess, preselectedClient, trigger }: NewSession
   const [form, setForm] = useState(EMPTY_FORM)
   const [startDT, setStartDT] = useState(EMPTY_DT)
   const [endTime, setEndTime] = useState("")
+
+  useEffect(() => {
+    if (open && initialStartDate) {
+      setStartDT({ date: initialStartDate, time: initialStartTime ?? "" })
+    }
+  }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -250,8 +262,7 @@ export function NewSession({ onSuccess, preselectedClient, trigger }: NewSession
         ...(form.description.trim() && { description: form.description }),
         ...(toolsUsed.length > 0 && { tools_used: toolsUsed }),
       })
-      setOpen(false)
-      handleReset()
+      handleOpenChange(false)
       onSuccess?.()
     } catch {
       setError("Failed to create session. Please try again.")
@@ -260,16 +271,24 @@ export function NewSession({ onSuccess, preselectedClient, trigger }: NewSession
     }
   }
 
+  function handleOpenChange(o: boolean) {
+    if (!isControlled) setInternalOpen(o)
+    externalOnOpenChange?.(o)
+    if (!o) handleReset()
+  }
+
   return (
-    <Dialog open={open} onOpenChange={(o: boolean) => { setOpen(o); if (!o) handleReset() }}>
-      <DialogTrigger asChild>
-        {trigger ?? (
-          <Button variant="blue" size="sm" className="flex items-center" style={{ borderRadius: "9999px" }}>
-            <Plus size={16} className="mr-1" />
-            New Session
-          </Button>
-        )}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          {trigger ?? (
+            <Button variant="blue" size="sm" className="flex items-center" style={{ borderRadius: "9999px" }}>
+              <Plus size={16} className="mr-1" />
+              New Session
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
 
       <DialogContent className="sm:max-w-[620px] max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>

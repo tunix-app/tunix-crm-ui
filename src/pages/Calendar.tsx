@@ -16,6 +16,7 @@ const Calendar = () => {
   const [view, setView] = useState<'day' | 'week' | 'month'>('week');
   const [sessions, setSessions] = useState<Session[]>([]);
   const [editSessionId, setEditSessionId] = useState<string | null>(null);
+  const [newSessionSlot, setNewSessionSlot] = useState<{ start: Date; end: Date } | null>(null);
 
   const fetchSessions = useCallback(async () => {
     if (!userId) return;
@@ -47,6 +48,12 @@ const Calendar = () => {
 
   const formatDate = (date: Date): string =>
     date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const toSlotTime = (date: Date): string => {
+    const h = String(date.getHours()).padStart(2, '0');
+    const m = date.getMinutes() >= 30 ? '30' : '00';
+    return `${h}:${m}`;
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -100,12 +107,20 @@ const Calendar = () => {
           onClose={() => setEditSessionId(null)}
           onSuccess={fetchSessions}
         />
+        <NewSession
+          open={newSessionSlot !== null}
+          onOpenChange={(o) => { if (!o) setNewSessionSlot(null); }}
+          onSuccess={fetchSessions}
+          initialStartDate={newSessionSlot?.start}
+          initialStartTime={newSessionSlot ? toSlotTime(newSessionSlot.start) : undefined}
+        />
         <div className="flex-1 overflow-y-auto">
           <CalendarView
             currentDate={currentDate}
             view={view}
             sessions={sessions}
             onSessionClick={setEditSessionId}
+            onSlotClick={(start, end) => setNewSessionSlot({ start, end })}
           />
         </div>
       </div>
