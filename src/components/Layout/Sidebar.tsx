@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Users, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { Home, Calendar, Users, Dumbbell, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/context/UserContext';
 
@@ -42,6 +42,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       icon: <Users size={20} />,
       path: '/clients',
       notifications: notifications.clients,
+    },
+    {
+      name: 'Exercises',
+      icon: <Dumbbell size={20} />,
+      path: '/exercises',
+      notifications: 0,
     },
     // {
     //   name: 'Program Builder',
