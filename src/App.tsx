@@ -8,6 +8,7 @@ import ProgramBuilder from './pages/ProgramBuilder';
 import ClientAnalytics from './pages/ClientAnalytics';
 import Clients from './pages/Clients';
 import Settings from './pages/Settings';
+import ExercisesPage from './pages/ExercisesPage';
 import UserSelection from './pages/UserSelection';
 import { UserProvider, useUser } from './context/UserContext';
 
@@ -54,6 +55,7 @@ export function App() {
             <Route path="/client-analytics" element={<ClientAnalytics />} />
             <Route path="/clients" element={<Clients />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/exercises" element={<ExercisesPage />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Routes>
