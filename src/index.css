@@ -33,7 +33,9 @@
 .rbc-wrapper .rbc-event { background: transparent; border: none; padding: 0; box-shadow: none; }
 .rbc-wrapper .rbc-event.rbc-selected { background: transparent; outline: none; }
 .rbc-wrapper .rbc-event:focus { outline: none; }
-.rbc-wrapper .rbc-today { background-color: #eff6ff; }
+.rbc-wrapper .rbc-today { background-color: transparent; }
+.rbc-wrapper .rbc-current-time-indicator { height: 2px; background-color: #ef4444; }
+.rbc-wrapper .rbc-current-time-indicator::before { content: ''; position: absolute; left: -5px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background-color: #ef4444; border-radius: 50%; }
 .rbc-wrapper .rbc-header { font-size: 0.75rem; font-weight: 600; padding: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; border-bottom: 1px solid #e5e7eb; }
 .rbc-wrapper .rbc-time-gutter .rbc-timeslot-group { border: none; }
 .rbc-wrapper .rbc-time-slot { font-size: 0.7rem; color: #9ca3af; }
