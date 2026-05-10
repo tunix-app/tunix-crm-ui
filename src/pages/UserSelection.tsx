@@ -42,8 +42,15 @@ const UserSelection = () => {
     const selected = users.find((u) => u.id === selectedId);
     if (!selected) return;
     setIsContinuing(true);
-    setUser(selected.id, selected);
-    navigate('/dashboard');
+    try {
+      const { token } = await userApi.getToken(selectedId);
+      localStorage.setItem('auth_token', token);
+      setUser(selected.id, selected);
+      navigate('/dashboard');
+    } catch {
+      setError('Failed to authenticate. Please try again.');
+      setIsContinuing(false);
+    }
   };
 
   const getInitials = (u: UserProfile) =>
