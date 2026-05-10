@@ -21,14 +21,13 @@ export async function apiRequest<T>(
     ...options,
   };
 
-  // Add authentication token if available
-  // const token = localStorage.getItem('auth_token');
-  //   if (token) {
-  //   config.headers = {
-  //     ...config.headers,
-  //     'Authorization': `Bearer ${token}`,
-  //   };
-  // }
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers = {
+      ...config.headers,
+      'Authorization': `Bearer ${token}`,
+    };
+  }
 
   try {
     const response = await fetch(url, config);

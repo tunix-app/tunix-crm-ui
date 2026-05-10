@@ -5,6 +5,7 @@ import { apiRequest } from "./api";
 export const userApi = {
   // Profile endpoints
   getUsers: () => apiRequest<any[]>('/user/superusers'),
+  getToken: (userId: string) => apiRequest<{ token: string }>(`/user/${userId}/token`),
   getUser: (userId: string) => apiRequest<any>(`/user/${userId}`),
   createUser: (newUserData: any) => apiRequest<any>('/user', {
     method: 'POST',
