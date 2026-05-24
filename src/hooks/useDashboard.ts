@@ -15,14 +15,11 @@ function toLocalDateString(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-function getCurrentWeekDates(): string[] {
+function getNext7Days(): string[] {
   const today = new Date();
-  const day = today.getDay(); // 0=Sun, 1=Mon
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1));
   return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
     return toLocalDateString(d);
   });
 }
@@ -51,7 +48,7 @@ export function useDashboard() {
     setIsLoading(true);
     setError(null);
     try {
-      const weekDates = getCurrentWeekDates();
+      const weekDates = getNext7Days();
       const todayStr = toLocalDateString(new Date());
       const results = await Promise.all(weekDates.map((date) => getDashboard(date)));
       const todayIndex = weekDates.indexOf(todayStr);
