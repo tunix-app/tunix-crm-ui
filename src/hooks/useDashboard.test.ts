@@ -1,5 +1,8 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
+import { UserProvider } from '@/context/UserContext';
+import React from 'react';
 import { useDashboard } from './useDashboard';
 import * as dashboardApi from '@/lib/dashboardApi';
 import type { CoachDashboard } from '@/types/dashboard';
@@ -13,6 +16,14 @@ const mockDashboardData: CoachDashboard = {
   unscheduled_clients: [],
 };
 
+function wrapper({ children }: { children: React.ReactNode }) {
+  return React.createElement(
+    MemoryRouter,
+    null,
+    React.createElement(UserProvider, null, children),
+  );
+}
+
 describe('useDashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -20,13 +31,13 @@ describe('useDashboard', () => {
 
   it('starts in loading state', () => {
     vi.mocked(dashboardApi.getDashboard).mockResolvedValue(mockDashboardData);
-    const { result } = renderHook(() => useDashboard());
+    const { result } = renderHook(() => useDashboard(), { wrapper });
     expect(result.current.isLoading).toBe(true);
   });
 
   it('sets dashboard data on successful fetch', async () => {
     vi.mocked(dashboardApi.getDashboard).mockResolvedValue(mockDashboardData);
-    const { result } = renderHook(() => useDashboard());
+    const { result } = renderHook(() => useDashboard(), { wrapper });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -36,41 +47,38 @@ describe('useDashboard', () => {
 
   it('stops loading and leaves dashboard null on fetch failure', async () => {
     vi.mocked(dashboardApi.getDashboard).mockRejectedValue(new Error('Server error'));
-    const { result } = renderHook(() => useDashboard());
+    const { result } = renderHook(() => useDashboard(), { wrapper });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.dashboard).toBeNull();
   });
 
-  it('re-fetches when selectedDate changes', async () => {
+  it('calls getDashboard for multiple days on initial fetch', async () => {
     vi.mocked(dashboardApi.getDashboard).mockResolvedValue(mockDashboardData);
-    const { result } = renderHook(() => useDashboard());
+    const { result } = renderHook(() => useDashboard(), { wrapper });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(vi.mocked(dashboardApi.getDashboard)).toHaveBeenCalledTimes(1);
-    expect(vi.mocked(dashboardApi.getDashboard)).toHaveBeenCalledWith(undefined);
+
+    expect(vi.mocked(dashboardApi.getDashboard).mock.calls.length).toBeGreaterThan(1);
+  });
+
+  it('re-fetches when refetch is called', async () => {
+    vi.mocked(dashboardApi.getDashboard).mockResolvedValue(mockDashboardData);
+    const { result } = renderHook(() => useDashboard(), { wrapper });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    const callCountAfterMount = vi.mocked(dashboardApi.getDashboard).mock.calls.length;
 
     await act(async () => {
-      result.current.setSelectedDate('2026-05-10');
+      await result.current.refetch();
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(vi.mocked(dashboardApi.getDashboard)).toHaveBeenCalledTimes(2);
-    expect(vi.mocked(dashboardApi.getDashboard)).toHaveBeenLastCalledWith('2026-05-10');
-  });
 
-  it('clears dashboard data when setSelectedDate is called', async () => {
-    vi.mocked(dashboardApi.getDashboard).mockResolvedValue(mockDashboardData);
-    const { result } = renderHook(() => useDashboard());
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.dashboard).toEqual(mockDashboardData);
-
-    act(() => {
-      result.current.setSelectedDate('2026-05-10');
-    });
-
-    expect(result.current.dashboard).toBeNull();
+    expect(vi.mocked(dashboardApi.getDashboard).mock.calls.length).toBeGreaterThan(
+      callCountAfterMount,
+    );
   });
 });
