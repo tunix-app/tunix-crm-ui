@@ -4,7 +4,7 @@ import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
 import Dashboard from './pages/Dashboard';
 import Calendar from './pages/Calendar';
-import ProgramBuilder from './pages/ProgramBuilder';
+import ProgramsPage from './pages/Programs';
 import ClientAnalytics from './pages/ClientAnalytics';
 import Clients from './pages/Clients';
 import Settings from './pages/Settings';
@@ -51,7 +51,7 @@ export function App() {
           <Route element={<ProtectedLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/calendar" element={<Calendar />} />
-            <Route path="/program-builder" element={<ProgramBuilder />} />
+            <Route path="/programs" element={<ProgramsPage />} />
             <Route path="/client-analytics" element={<ClientAnalytics />} />
             <Route path="/clients" element={<Clients />} />
             <Route path="/settings" element={<Settings />} />
