@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Users, Dumbbell, LayoutList, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { Home, Calendar, Users, Dumbbell, LayoutList, Wrench, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/context/UserContext';
 
@@ -53,6 +53,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       name: 'Programs',
       icon: <LayoutList size={20} />,
       path: '/programs',
+      notifications: 0,
+    },
+    {
+      name: 'Program Builder',
+      icon: <Wrench size={20} />,
+      path: '/program-builder',
       notifications: 0,
     },
     // {
