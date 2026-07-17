@@ -22,7 +22,7 @@ import { TagInput } from './TagInput';
 import type { CreateProgramDto, Program } from '@/types/program';
 
 type Client = {
-  client_id: string;
+  id: string;
   client_name: string;
 };
 
@@ -112,7 +112,7 @@ export function ProgramCreateDialog({
               </SelectTrigger>
               <SelectContent>
                 {clients.map((client) => (
-                  <SelectItem key={client.client_id} value={client.client_id}>
+                  <SelectItem key={client.id} value={client.id}>
                     {client.client_name}
                   </SelectItem>
                 ))}
