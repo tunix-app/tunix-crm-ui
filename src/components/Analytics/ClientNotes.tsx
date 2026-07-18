@@ -43,17 +43,17 @@ const ClientNotes = ({
 
 
   // Add a new note
-  const handleAddNote = () => {
+  const handleAddNote = async () => {
     if (newNote.trim() === '') return;
-    const newNoteObj: Note = {
-      id: Date.now(),
-      date: new Date().toISOString().split('T')[0],
-      content: newNote,
-      tags: newNoteTags.split(',').map(tag => tag.trim()).filter(tag => tag !== '')
-    };
-    setNotes([newNoteObj, ...notes]);
-    setNewNote('');
-    setNewNoteTags('');
+    const tags = newNoteTags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    try {
+      const created = await noteApi.createNote(clientId, { content: newNote, tags });
+      setNotes([created, ...notes]);
+      setNewNote('');
+      setNewNoteTags('');
+    } catch (error) {
+      console.error('Failed to create note:', error);
+    }
   };
   // Start editing a note
   const handleEditNote = (note: Note) => {
@@ -62,27 +62,27 @@ const ClientNotes = ({
     setEditedTags(note.tags.join(', '));
   };
   // Save edited note
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editingNoteId === null) return;
-    const updatedNotes = notes.map(note => {
-      if (note.id === editingNoteId) {
-        return {
-          ...note,
-          content: editedContent,
-          tags: editedTags.split(',').map(tag => tag.trim()).filter(tag => tag !== '')
-        };
-      }
-      return note;
-    });
-    setNotes(updatedNotes);
-    setEditingNoteId(null);
-    setEditedContent('');
-    setEditedTags('');
+    const tags = editedTags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    try {
+      const updated = await noteApi.updateNote(String(editingNoteId), { content: editedContent, tags });
+      setNotes(notes.map(note => (note.id === editingNoteId ? updated : note)));
+      setEditingNoteId(null);
+      setEditedContent('');
+      setEditedTags('');
+    } catch (error) {
+      console.error('Failed to update note:', error);
+    }
   };
   // Delete a note
-  const handleDeleteNote = (id: number) => {
-    const updatedNotes = notes.filter(note => note.id !== id);
-    setNotes(updatedNotes);
+  const handleDeleteNote = async (id: number) => {
+    try {
+      await noteApi.deleteNote(String(id));
+      setNotes(notes.filter(note => note.id !== id));
+    } catch (error) {
+      console.error('Failed to delete note:', error);
+    }
   };
   // Cancel editing
   const handleCancelEdit = () => {
