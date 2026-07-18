@@ -32,7 +32,15 @@ export async function apiRequest<T>(
   try {
     const response = await fetch(url, config);
     if (!response.ok) {
-      throw new ApiError(response.status, `HTTP error! status: ${response.status}`);
+      let message = `HTTP error! status: ${response.status}`;
+      try {
+        const body = await response.text();
+        const parsed = JSON.parse(body);
+        if (parsed.message) {
+          message = Array.isArray(parsed.message) ? parsed.message[0] : parsed.message;
+        }
+      } catch {}
+      throw new ApiError(response.status, message);
     }
     
     const text = await response.text();

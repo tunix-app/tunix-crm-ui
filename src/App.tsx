@@ -10,15 +10,8 @@ import ClientAnalytics from './pages/ClientAnalytics';
 import Clients from './pages/Clients';
 import Settings from './pages/Settings';
 import ExercisesPage from './pages/ExercisesPage';
-import UserSelection from './pages/UserSelection';
+import LoginPage from './pages/LoginPage';
 import { UserProvider, useUser } from './context/UserContext';
-
-function UserSelectionGuard() {
-  const { userId, isInitializing } = useUser();
-  if (isInitializing) return null;
-  if (userId) return <Navigate to="/dashboard" replace />;
-  return <UserSelection />;
-}
 
 const FULL_HEIGHT_ROUTES = new Set(['/program-builder']);
 
@@ -30,7 +23,7 @@ function ProtectedLayout() {
   if (isInitializing) return null;
 
   if (!userId) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   const isFullHeight = FULL_HEIGHT_ROUTES.has(pathname);
@@ -52,9 +45,12 @@ export function App() {
   return (
     <UserProvider>
       <Router>
-<Routes>
-          <Route path="/" element={<UserSelectionGuard />} />
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route element={<ProtectedLayout />}>
+            <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/coach/dashboard" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/programs" element={<ProgramsPage />} />
