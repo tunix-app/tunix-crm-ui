@@ -7,6 +7,11 @@ import { clientApi } from '@/lib/clientApi';
 import { sessionApi } from '@/lib/sessionApi';
 import { useUser } from '@/context/UserContext';
 
+// Below xl, the last session, next session and program columns stack into one column.
+const WIDE_COLUMN = 'hidden xl:table-cell';
+const CONDENSED_COLUMN = 'xl:hidden';
+// From 1366px, long values wrap instead of scrolling sideways. They can't wrap from 1280 to 1365px, which keeps the desktop layout at 1280px as it was.
+const WRAPS_WHEN_TIGHT = 'whitespace-normal [overflow-wrap:anywhere] xl:whitespace-nowrap min-[1366px]:whitespace-normal';
 
 const Clients = () => {
   const { userId } = useUser();
@@ -159,13 +164,16 @@ const Clients = () => {
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${CONDENSED_COLUMN}`}>
+                      Sessions &amp; Program
+                    </th>
+                    <th scope="col" className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${WIDE_COLUMN}`}>
                       Last Session
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${WIDE_COLUMN}`}>
                       Next Session
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${WIDE_COLUMN}`}>
                       Current Program
                     </th>
                   </tr>
@@ -182,20 +190,27 @@ const Clients = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <Skeleton className="h-5 w-16 rounded-full" />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className={`px-6 py-4 ${CONDENSED_COLUMN}`}>
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-44" />
+                          <Skeleton className="h-4 w-44" />
+                          <Skeleton className="h-4 w-28" />
+                        </div>
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap ${WIDE_COLUMN}`}>
                         <Skeleton className="h-4 w-24" />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className={`px-6 py-4 whitespace-nowrap ${WIDE_COLUMN}`}>
                         <Skeleton className="h-4 w-24" />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className={`px-6 py-4 whitespace-nowrap ${WIDE_COLUMN}`}>
                         <Skeleton className="h-4 w-28" />
                       </td>
                     </tr>
                   )) : paginatedClients.map(client => {
                 // const currentProgram = client.current_program.find((p: { status: string; }) => p.status === 'in-progress');
                 return <tr key={client.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedClient(client.id)}>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className={`px-6 py-4 ${WRAPS_WHEN_TIGHT}`}>
                           <div className="flex items-center">
                             {/* <div className="h-10 w-10 flex-shrink-0"> */}
                               {/* <img className="h-10 w-10 rounded-full object-cover" src={client.profileImage} alt="" /> */}
@@ -220,13 +235,27 @@ const Clients = () => {
                             {client.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className={`px-6 py-4 text-sm text-gray-500 ${CONDENSED_COLUMN}`}>
+                          <dl className="space-y-1 [overflow-wrap:anywhere]">
+                            {[
+                              ['Last session', displayLastSession(client.last_session)],
+                              ['Next session', displayNextSession(client.next_session)],
+                              ['Program', client.current_program_name || '-'],
+                            ].map(([label, value]) => (
+                              <div key={label}>
+                                <dt className="inline font-medium text-gray-700">{label}: </dt>
+                                <dd className="inline">{value}</dd>
+                              </div>
+                            ))}
+                          </dl>
+                        </td>
+                        <td className={`px-6 py-4 whitespace-nowrap text-sm text-gray-500 ${WIDE_COLUMN}`}>
                           {displayLastSession(client.last_session)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className={`px-6 py-4 whitespace-nowrap text-sm text-gray-500 ${WIDE_COLUMN}`}>
                           {displayNextSession(client.next_session)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className={`px-6 py-4 text-sm text-gray-500 ${WIDE_COLUMN} ${WRAPS_WHEN_TIGHT}`}>
                           {client.current_program_name || '-'}
                         </td>
                         {/* <td className="px-6 py-4 whitespace-nowrap">
