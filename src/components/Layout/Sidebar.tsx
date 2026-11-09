@@ -3,13 +3,15 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Calendar, Users, Dumbbell, LayoutList, Wrench, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/context/UserContext';
+import type { SidebarLayout } from '@/hooks/useSidebarLayout';
 
 interface SidebarProps {
+  layout: SidebarLayout;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+const Sidebar = ({ layout, sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, clearUser } = useUser();
@@ -83,88 +85,117 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     navigate('/');
   };
 
+  if (layout === 'drawer' && !sidebarOpen) return null;
+
+  const overlaysContent = layout !== 'expanded' && sidebarOpen;
+  const closeOverlay = () => {
+    if (layout !== 'expanded') setSidebarOpen(false);
+  };
+
   return (
-    <div
-      className={`${sidebarOpen ? 'w-64' : 'w-24'} transition-all duration-300 bg-gray-900 text-white flex flex-col`}
-    >
-      <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
-        {sidebarOpen ? (
-          <h1 className="text-xl font-bold">GJBR</h1>
-        ) : (
-          <h1 className="text-lg font-bold">GJBR</h1>
+    <>
+      {overlaysContent && (
+        <button
+          type="button"
+          tabIndex={-1}
+          aria-label="Dismiss sidebar"
+          onClick={closeOverlay}
+          className="fixed inset-0 z-30 cursor-default bg-black/50"
+        />
+      )}
+      {/* Holds the rail's place so that expanding it doesn't move the content. */}
+      {layout === 'rail' && sidebarOpen && <div className="w-24 flex-shrink-0" />}
+      <div
+        className={cn(
+          `${sidebarOpen ? 'w-64' : 'w-24'} transition-all duration-300 bg-gray-900 text-white flex flex-col`,
+          overlaysContent && 'fixed left-0 top-0 z-40 h-dvh',
+          layout === 'drawer' && 'animate-in slide-in-from-left-full'
         )}
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-1 rounded-md hover:bg-gray-800"
-        >
-          {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-        </button>
-      </div>
+      >
+        <div className={cn('flex items-center justify-between h-16 px-4 border-b border-gray-800', !sidebarOpen && 'touch:px-1')}>
+          {sidebarOpen ? (
+            <h1 className="text-xl font-bold">GJBR</h1>
+          ) : (
+            <h1 className="text-lg font-bold touch:text-sm">GJBR</h1>
+          )}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+            className="p-1 rounded-md hover:bg-gray-800 touch:tap-target"
+          >
+            {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+          </button>
+        </div>
 
-      <div className="flex-1 py-4">
-        <ul className="space-y-2">
-          {navItems.map((item) => (
-            <li key={item.name}>
-              <Link
-                to={item.path}
-                className={cn(
-                  'flex items-center px-4 py-3 rounded-md transition-colors',
-                  pathname === item.path ? 'bg-tan-600' : 'hover:bg-gray-800',
-                  sidebarOpen ? 'justify-start' : 'justify-center',
-                  'relative'
-                )}
-              >
-                <span className="flex-shrink-0">{item.icon}</span>
-                {sidebarOpen && <span className="ml-3">{item.name}</span>}
-                {item.notifications > 0 && (
-                  <span
-                    className={`absolute ${sidebarOpen ? 'right-4' : 'top-2 right-2'} flex h-5 w-5 items-center justify-center`}
-                  >
-                    <span className="relative flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                    </span>
-                    {sidebarOpen && item.notifications > 1 && (
-                      <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full bg-red-500 flex items-center justify-center text-xs">
-                        {item.notifications}
+        <div className="flex-1 py-4">
+          <ul className="space-y-2">
+            {navItems.map((item) => (
+              <li key={item.name}>
+                <Link
+                  to={item.path}
+                  aria-label={item.name}
+                  onClick={closeOverlay}
+                  className={cn(
+                    'flex items-center px-4 py-3 rounded-md transition-colors',
+                    pathname === item.path ? 'bg-tan-600' : 'hover:bg-gray-800',
+                    sidebarOpen ? 'justify-start' : 'justify-center',
+                    'relative'
+                  )}
+                >
+                  <span className="flex-shrink-0">{item.icon}</span>
+                  {sidebarOpen && <span className="ml-3">{item.name}</span>}
+                  {item.notifications > 0 && (
+                    <span
+                      className={`absolute ${sidebarOpen ? 'right-4' : 'top-2 right-2'} flex h-5 w-5 items-center justify-center`}
+                    >
+                      <span className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                       </span>
-                    )}
-                  </span>
-                )}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+                      {sidebarOpen && item.notifications > 1 && (
+                        <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full bg-red-500 flex items-center justify-center text-xs">
+                          {item.notifications}
+                        </span>
+                      )}
+                    </span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      <div className="p-4 border-t border-gray-800">
-        <Link
-          to="/settings"
-          className="flex items-center rounded-md p-2 transition-colors hover:bg-gray-800"
-        >
-          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
-            <span className="font-medium text-sm">{initials}</span>
-          </div>
-          {sidebarOpen && (
-            <div className="ml-3 min-w-0 flex-1">
-              <p className="text-sm font-medium truncate">{displayName}</p>
-              <p className="text-xs text-gray-400">{displayRole}</p>
+        <div className="p-4 border-t border-gray-800">
+          <Link
+            to="/settings"
+            aria-label="Settings"
+            onClick={closeOverlay}
+            className="flex items-center rounded-md p-2 transition-colors hover:bg-gray-800"
+          >
+            <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+              <span className="font-medium text-sm">{initials}</span>
             </div>
-          )}
-        </Link>
-        <button
-          onClick={handleSwitchUser}
-          className={cn(
-            'mt-1 flex items-center rounded-md p-2 transition-colors hover:bg-gray-800 text-gray-400 hover:text-white w-full',
-            sidebarOpen ? 'justify-start' : 'justify-center'
-          )}
-          title="Switch user"
-        >
-          <LogOut size={16} className="flex-shrink-0" />
-          {sidebarOpen && <span className="ml-3 text-xs">Switch User</span>}
-        </button>
+            {sidebarOpen && (
+              <div className="ml-3 min-w-0 flex-1">
+                <p className="text-sm font-medium truncate">{displayName}</p>
+                <p className="text-xs text-gray-400">{displayRole}</p>
+              </div>
+            )}
+          </Link>
+          <button
+            onClick={handleSwitchUser}
+            className={cn(
+              'mt-1 flex items-center rounded-md p-2 transition-colors hover:bg-gray-800 text-gray-400 hover:text-white w-full touch:mt-3 touch:min-h-11',
+              sidebarOpen ? 'justify-start' : 'justify-center'
+            )}
+            title="Switch user"
+          >
+            <LogOut size={16} className="flex-shrink-0" />
+            {sidebarOpen && <span className="ml-3 text-xs">Switch User</span>}
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

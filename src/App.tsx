@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
@@ -12,13 +12,18 @@ import Settings from './pages/Settings';
 import ExercisesPage from './pages/ExercisesPage';
 import LoginPage from './pages/LoginPage';
 import { UserProvider, useUser } from './context/UserContext';
+import { useSidebarLayout } from './hooks/useSidebarLayout';
 
 const FULL_HEIGHT_ROUTES = new Set(['/program-builder']);
 
-function ProtectedLayout() {
+export function ProtectedLayout() {
   const { userId, isInitializing } = useUser();
   const { pathname } = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const layout = useSidebarLayout();
+  const [sidebarOpen, setSidebarOpen] = useState(layout === 'expanded');
+
+  // Rotating across a breakpoint gives the sidebar that layout's default.
+  useEffect(() => setSidebarOpen(layout === 'expanded'), [layout]);
 
   if (isInitializing) return null;
 
@@ -29,8 +34,8 @@ function ProtectedLayout() {
   const isFullHeight = FULL_HEIGHT_ROUTES.has(pathname);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+    <div className="flex h-dvh bg-gray-100">
+      <Sidebar layout={layout} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <main className={isFullHeight ? 'flex-1 overflow-hidden bg-gray-50' : 'flex-1 overflow-y-auto bg-gray-50 p-4'}>
