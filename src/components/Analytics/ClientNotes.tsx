@@ -12,6 +12,7 @@ interface Note {
   content: string;
   tags: string[];
 }
+const SAVE_ERROR = "Couldn't save this note. Your text is still here, so please try again.";
 const ClientNotes = ({
   clientId,
   limit = 10,
@@ -23,6 +24,9 @@ const ClientNotes = ({
   const [editedContent, setEditedContent] = useState('');
   const [editedTags, setEditedTags] = useState('');
   const [showAllNotes, setShowAllNotes] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
   // Mock notes data
   const [notes, setNotes] = useState<Note[]>([]);
 
@@ -44,15 +48,20 @@ const ClientNotes = ({
 
   // Add a new note
   const handleAddNote = async () => {
-    if (newNote.trim() === '') return;
+    if (newNote.trim() === '' || isSaving) return;
     const tags = newNoteTags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    setIsSaving(true);
+    setAddError(null);
     try {
       const created = await noteApi.createNote(clientId, { content: newNote, tags });
-      setNotes([created, ...notes]);
+      setNotes(prev => [created, ...prev]);
       setNewNote('');
       setNewNoteTags('');
     } catch (error) {
       console.error('Failed to create note:', error);
+      setAddError(SAVE_ERROR);
+    } finally {
+      setIsSaving(false);
     }
   };
   // Start editing a note
@@ -60,26 +69,33 @@ const ClientNotes = ({
     setEditingNoteId(note.id);
     setEditedContent(note.content);
     setEditedTags(note.tags.join(', '));
+    setEditError(null);
   };
   // Save edited note
   const handleSaveEdit = async () => {
-    if (editingNoteId === null) return;
+    if (editingNoteId === null || isSaving) return;
     const tags = editedTags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    setIsSaving(true);
+    setEditError(null);
     try {
       const updated = await noteApi.updateNote(String(editingNoteId), { content: editedContent, tags });
-      setNotes(notes.map(note => (note.id === editingNoteId ? updated : note)));
+      setNotes(prev => prev.map(note => (note.id === editingNoteId ? updated : note)));
       setEditingNoteId(null);
       setEditedContent('');
       setEditedTags('');
     } catch (error) {
       console.error('Failed to update note:', error);
+      setEditError(SAVE_ERROR);
+    } finally {
+      setIsSaving(false);
     }
   };
   // Delete a note
   const handleDeleteNote = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this note?')) return;
     try {
       await noteApi.deleteNote(String(id));
-      setNotes(notes.filter(note => note.id !== id));
+      setNotes(prev => prev.filter(note => note.id !== id));
     } catch (error) {
       console.error('Failed to delete note:', error);
     }
@@ -89,6 +105,7 @@ const ClientNotes = ({
     setEditingNoteId(null);
     setEditedContent('');
     setEditedTags('');
+    setEditError(null);
   };
   // Format date for display
   const formatDate = (dateString: string): string => {
@@ -113,13 +130,14 @@ const ClientNotes = ({
         <textarea value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="Add a new note about this client..." className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows={4} />
         <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
           <div className="flex-1">
-            <input type="text" value={newNoteTags} onChange={e => setNewNoteTags(e.target.value)} placeholder="Add tags separated by commas (e.g. strength, mobility)" className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent" />
+            <input type="text" value={newNoteTags} onChange={e => setNewNoteTags(e.target.value)} placeholder="Add tags separated by commas (e.g. strength, mobility)" className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent touch:min-h-11" />
           </div>
-          <button onClick={handleAddNote} className="flex items-center px-4 py-2 bg-amber-600 text-white rounded-md text-sm font-medium hover:bg-amber-700">
+          <button onClick={handleAddNote} disabled={isSaving} className="flex items-center px-4 py-2 bg-amber-600 text-white rounded-md text-sm font-medium hover:bg-amber-700 disabled:opacity-50 touch:min-h-11">
             <SaveIcon size={16} className="mr-2" />
             Save Note
           </button>
         </div>
+        {addError && <p role="alert" className="mt-2 text-sm text-red-600">{addError}</p>}
         <div className="mt-2 text-xs text-gray-500">
           Note will be timestamped with the current date (
           {formatDate(new Date().toISOString().split('T')[0])}) and time (
@@ -129,7 +147,7 @@ const ClientNotes = ({
 
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Client Notes</h3>
-        {notes.length > limit && <button onClick={() => setShowAllNotes(!showAllNotes)} className="text-sm text-amber-600 hover:text-amber-800">
+        {notes.length > limit && <button onClick={() => setShowAllNotes(!showAllNotes)} className="text-sm text-amber-600 hover:text-amber-800 touch:min-h-11">
             {showAllNotes ? 'Show Recent' : 'Show All Notes'}
           </button>}
       </div>
@@ -141,22 +159,23 @@ const ClientNotes = ({
         <>
                   <textarea value={editedContent} onChange={e => setEditedContent(e.target.value)} className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows={4} />
                   <div className="mt-3">
-                    <input type="text" value={editedTags} onChange={e => setEditedTags(e.target.value)} placeholder="Tags separated by commas" className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent" />
+                    <input type="text" value={editedTags} onChange={e => setEditedTags(e.target.value)} placeholder="Tags separated by commas" className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent touch:min-h-11" />
                   </div>
+                  {editError && <p role="alert" className="mt-2 text-sm text-red-600">{editError}</p>}
                   <div className="mt-3 flex justify-end space-x-2">
-                    <button onClick={handleCancelEdit} className="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-100">
+                    <button onClick={handleCancelEdit} className="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-100 touch:min-h-11">
                       Cancel
                     </button>
-                    <button onClick={handleSaveEdit} className="px-3 py-1 bg-amber-600 text-white rounded-md text-sm hover:bg-amber-700">
+                    <button onClick={handleSaveEdit} disabled={isSaving} className="px-3 py-1 bg-amber-600 text-white rounded-md text-sm hover:bg-amber-700 disabled:opacity-50 touch:min-h-11">
                       Save Changes
                     </button>
                   </div>
                 </> :
         // View mode
         <>
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center">
-                      <span className="text-sm font-medium text-gray-900">
+                  <div className="flex justify-between items-start gap-2 mb-2">
+                    <div className="flex items-center min-w-0">
+                      <span className="text-sm font-medium text-gray-900 whitespace-nowrap">
                         {formatDate(note.date)}
                       </span>
                       <span className="mx-2 text-gray-300">•</span>
@@ -166,16 +185,17 @@ const ClientNotes = ({
                           </span>)) : null}
                       </div>
                     </div>
-                    <div className="flex space-x-1">
-                      <button onClick={() => handleEditNote(note)} className="p-1 rounded-md hover:bg-gray-100">
+                    {/* Edit stays off while saving, because a save that finishes closes whichever editor is open. */}
+                    <div className="flex flex-shrink-0 space-x-1 touch:space-x-3">
+                      <button aria-label="Edit note" onClick={() => handleEditNote(note)} disabled={isSaving} className="p-1 rounded-md hover:bg-gray-100 touch:tap-target">
                         <EditIcon size={16} className="text-gray-500" />
                       </button>
-                      <button onClick={() => handleDeleteNote(note.id)} className="p-1 rounded-md hover:bg-gray-100">
+                      <button aria-label="Delete note" onClick={() => handleDeleteNote(note.id)} className="p-1 rounded-md hover:bg-gray-100 touch:tap-target">
                         <TrashIcon size={16} className="text-gray-500" />
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-700">{note.content}</p>
+                  <p className="text-sm text-gray-700 break-words">{note.content}</p>
                 </>}
             </div>) : <div className="text-center py-8 border border-gray-200 rounded-lg">
             <p className="text-gray-500">
@@ -185,7 +205,7 @@ const ClientNotes = ({
       </div>
 
       {notes.length > 0 && !showAllNotes && notes.length > limit && <div className="text-center">
-          <button onClick={() => setShowAllNotes(true)} className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <button onClick={() => setShowAllNotes(true)} className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 touch:min-h-11">
             <PlusIcon size={16} className="mr-2" />
             View {notes.length - limit} More Notes
           </button>
