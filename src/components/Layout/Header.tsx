@@ -44,7 +44,7 @@ const Header = ({
   const unreadCount = notifications.filter(n => !n.read).length;
   // Close menus when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
       if (addMenuRef.current && !addMenuRef.current.contains(event.target as Node)) {
         setShowAddMenu(false);
       }
@@ -52,13 +52,14 @@ const Header = ({
         setShowNotifications(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    // iOS may not fire mousedown for taps on non-interactive areas.
+    document.addEventListener('pointerdown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('pointerdown', handleClickOutside);
     };
   }, []);
   return <header className="bg-white shadow-sm h-16 flex items-center px-4">
-      <button className="md:hidden p-2 rounded-md hover:bg-gray-100 mr-2" onClick={() => setSidebarOpen(!sidebarOpen)}>
+      <button aria-label="Open menu" className="lg:hidden p-2 rounded-md hover:bg-gray-100 mr-2 touch:tap-target" onClick={() => setSidebarOpen(!sidebarOpen)}>
         <Menu size={20} />
       </button>
       <div className="flex-1 flex items-center justify-between">
@@ -68,16 +69,16 @@ const Header = ({
               placeholder="Search clients, programs..." 
               value={searchTerm} 
               onChange={e => setSearchTerm(e.target.value)} 
-              className="w-full pl-10 pr-10 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+              className="w-full pl-10 pr-10 py-2 rounded-lg border touch:min-h-11 touch:pr-12 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
               autoFocus 
               style={{ borderRadius: '24px' }}
             />
             <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <button onClick={() => setShowSearch(false)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button aria-label="Close search" onClick={() => setShowSearch(false)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 touch:right-0 touch:tap-target">
               <X size={18} />
             </button>
           </div> : <div className="flex items-center space-x-2">
-            <button onClick={() => setShowSearch(true)} className="p-2 rounded-full hover:bg-gray-100">
+            <button aria-label="Search" onClick={() => setShowSearch(true)} className="p-2 rounded-full hover:bg-gray-100 touch:tap-target">
               <Search size={20} className="text-gray-500" />
             </button>
             <div className="flex items-center">
@@ -93,7 +94,7 @@ const Header = ({
         <div className="flex items-center space-x-3">
           {/* Notifications */}
           <div className="relative" ref={notificationsRef}>
-            <button className="p-2 rounded-full hover:bg-gray-100 relative" onClick={() => setShowNotifications(!showNotifications)}>
+            <button aria-label="Notifications" className="p-2 rounded-full hover:bg-gray-100 relative touch:tap-target" onClick={() => setShowNotifications(!showNotifications)}>
               <Bell size={20} className="text-gray-500" />
               {unreadCount > 0 && <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
                   {unreadCount}
@@ -125,7 +126,7 @@ const Header = ({
                     </div>}
                 </div>
                 <div className="p-2 border-t border-gray-200 bg-gray-50">
-                  <button className="w-full py-2 text-xs text-blue-600 font-medium hover:text-blue-800">
+                  <button className="w-full py-2 text-xs text-blue-600 font-medium hover:text-blue-800 touch:min-h-11">
                     Mark all as read
                   </button>
                 </div>
@@ -137,7 +138,7 @@ const Header = ({
               onClick={() => setShowAddMenu(!showAddMenu)} 
               variant="blue" 
               size="sm" 
-              className="flex items-center"
+              className="flex items-center touch:h-11"
               style={{ borderRadius: '9999px' }}
             >
               <Plus size={16} className="mr-1" />
@@ -145,15 +146,15 @@ const Header = ({
             </Button>
             {showAddMenu && <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-20">
                 <div className="py-1">
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" onClick={() => setShowAddMenu(false)}>
+                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center touch:min-h-11" onClick={() => setShowAddMenu(false)}>
                     <CalendarPlus size={16} className="mr-2 text-blue-500" />
                     New Session
                   </button>
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" onClick={() => setShowAddMenu(false)}>
+                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center touch:min-h-11" onClick={() => setShowAddMenu(false)}>
                     <Dumbbell size={16} className="mr-2 text-purple-500" />
                     New Program
                   </button>
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" onClick={() => setShowAddMenu(false)}>
+                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center touch:min-h-11" onClick={() => setShowAddMenu(false)}>
                     <UserPlus size={16} className="mr-2 text-green-500" />
                     New Client
                   </button>
