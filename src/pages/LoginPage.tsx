@@ -157,7 +157,7 @@ export default function LoginPage() {
   const countdownDisplay = `${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, '0')}`;
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-gray-900 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-8">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl overflow-hidden mb-4 ring-2 ring-gray-200">
@@ -166,7 +166,7 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold text-gray-900">
             {step === 'email' ? 'Sign in to GetJahBodyRight' : 'Check your email'}
           </h1>
-          <p className="text-gray-500 mt-1 text-sm">
+          <p className="text-gray-500 mt-1 text-sm break-words">
             {step === 'email'
               ? 'Enter your email to receive a sign-in code'
               : `We sent an 8-digit code to ${email}`}
@@ -184,7 +184,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={e => { setEmail(e.target.value); setError(null); }}
                 placeholder="you@example.com"
-                className="mt-1"
+                className="mt-1 touch:text-base"
                 autoComplete="email"
                 disabled={isLoading}
               />
