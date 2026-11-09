@@ -60,14 +60,14 @@ describe('ProtectedLayout sidebar', () => {
     it('closes when a link is picked', async () => {
       await renderAt(768);
       openDrawer();
-      fireEvent.click(sidebarLink()!);
+      fireEvent.click(screen.getByRole('link', { name: 'Clients' }));
       expect(sidebarLink()).toBeNull();
     });
 
     it('closes when the coach taps outside it', async () => {
       await renderAt(768);
       openDrawer();
-      fireEvent.click(scrim()!);
+      fireEvent.click(screen.getByRole('button', { name: 'Dismiss sidebar' }));
       expect(sidebarLink()).toBeNull();
     });
 
@@ -91,7 +91,7 @@ describe('ProtectedLayout sidebar', () => {
       expect(screen.getByText('GJBR').closest('.fixed')).toBeInTheDocument();
       expect(scrim()).toBeInTheDocument();
 
-      fireEvent.click(scrim()!);
+      fireEvent.click(screen.getByRole('button', { name: 'Dismiss sidebar' }));
       expect(screen.queryByText('Clients')).toBeNull();
     });
   });
@@ -110,7 +110,7 @@ describe('ProtectedLayout sidebar', () => {
 
     it('stays open when a link is picked', async () => {
       await renderAt(1366);
-      fireEvent.click(sidebarLink()!);
+      fireEvent.click(screen.getByRole('link', { name: 'Clients' }));
       expect(screen.getByText('Clients')).toBeInTheDocument();
     });
   });
@@ -137,7 +137,7 @@ describe('ProtectedLayout sidebar', () => {
     fireEvent.change(draft, { target: { value: 'unsaved recap' } });
 
     openDrawer();
-    fireEvent.click(scrim()!);
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss sidebar' }));
     setWidth(1180);
     await waitFor(() => expect(sidebarLink()).toBeInTheDocument());
     fireEvent.click(screen.getByRole('button', { name: 'Open sidebar' }));
