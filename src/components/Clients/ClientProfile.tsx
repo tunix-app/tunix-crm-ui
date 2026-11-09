@@ -174,6 +174,7 @@ const ClientProfile = ({
   };
 
   const handleRemoveGoal = async (index: number) => {
+    if (!window.confirm('Are you sure you want to remove this goal?')) return;
     const updatedGoals = (clientData.goals || []).filter((_, i) => i !== index);
     try {
       await clientApi.updateClient(clientData.id, { goals: updatedGoals });
@@ -293,7 +294,7 @@ const ClientProfile = ({
     return (
       <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
         <div className="p-4 sm:p-6 border-b border-gray-200">
-          <div className="flex flex-col md:flex-row md:items-center">
+          <div className="flex flex-col lg:flex-row lg:items-center">
             <div className="flex items-center">
               <div className="ml-4 space-y-2">
                 <Skeleton className="h-6 w-48" />
@@ -303,7 +304,7 @@ const ClientProfile = ({
                 </div>
               </div>
             </div>
-            <div className="mt-4 md:mt-0 md:ml-auto flex gap-3">
+            <div className="mt-4 lg:mt-0 lg:ml-auto flex flex-wrap gap-3">
               <Skeleton className="h-9 w-36" />
               <Skeleton className="h-9 w-40" />
               <Skeleton className="h-9 w-36" />
@@ -316,7 +317,7 @@ const ClientProfile = ({
         </div>
         <div className="flex-1 p-4 sm:p-6 space-y-6">
           <Skeleton className="h-24 w-full rounded-lg" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <Skeleton className="h-48 rounded-lg" />
             <Skeleton className="h-48 rounded-lg" />
             <Skeleton className="h-48 rounded-lg" />
@@ -330,14 +331,14 @@ const ClientProfile = ({
       <div className="p-4 sm:p-6 border-b border-gray-200">
         {isEditingInfo ? (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">Name</label>
                 <input
                   type="text"
                   value={editForm.client_name}
                   onChange={e => setEditForm(f => ({ ...f, client_name: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 touch:min-h-11 touch:text-base"
                 />
               </div>
               <div>
@@ -346,7 +347,7 @@ const ClientProfile = ({
                   type="email"
                   value={editForm.client_email}
                   onChange={e => { setEditForm(f => ({ ...f, client_email: e.target.value })); setEditErrors(err => ({ ...err, client_email: undefined })); }}
-                  className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 ${editErrors.client_email ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-amber-500'}`}
+                  className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 touch:min-h-11 touch:text-base ${editErrors.client_email ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-amber-500'}`}
                 />
                 {editErrors.client_email && <p className="mt-1 text-xs text-red-500">{editErrors.client_email}</p>}
               </div>
@@ -356,29 +357,29 @@ const ClientProfile = ({
                   type="tel"
                   value={editForm.phone}
                   onChange={e => { setEditForm(f => ({ ...f, phone: e.target.value })); setEditErrors(err => ({ ...err, phone: undefined })); }}
-                  className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 ${editErrors.phone ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-amber-500'}`}
+                  className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 touch:min-h-11 touch:text-base ${editErrors.phone ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-amber-500'}`}
                 />
                 {editErrors.phone && <p className="mt-1 text-xs text-red-500">{editErrors.phone}</p>}
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={handleSaveInfo} disabled={isSavingInfo} className="inline-flex items-center px-3 py-2 bg-amber-600 text-white text-sm font-medium rounded-full hover:bg-amber-700 disabled:opacity-50">
+              <button onClick={handleSaveInfo} disabled={isSavingInfo} className="inline-flex items-center px-3 py-2 bg-amber-600 text-white text-sm font-medium rounded-full hover:bg-amber-700 disabled:opacity-50 touch:min-h-11">
                 <SaveIcon size={14} className="mr-1" />
                 {isSavingInfo ? 'Saving...' : 'Save'}
               </button>
-              <button onClick={() => { setIsEditingInfo(false); setEditErrors({}); }} className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-full text-gray-700 hover:bg-gray-50">
+              <button onClick={() => { setIsEditingInfo(false); setEditErrors({}); }} className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-full text-gray-700 hover:bg-gray-50 touch:min-h-11">
                 <XIcon size={14} className="mr-1" />
                 Cancel
               </button>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col md:flex-row md:items-center">
+          <div className="flex flex-col lg:flex-row lg:items-center">
             <div className="flex items-center">
               <div className="ml-4">
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl font-bold text-gray-900">{clientData.client_name}</h2>
-                  <button onClick={handleStartEditInfo} className="text-gray-400 hover:text-gray-600 rounded-full">
+                  <button aria-label="Edit client info" onClick={handleStartEditInfo} className="text-gray-400 hover:text-gray-600 rounded-full touch:tap-target">
                     <EditIcon size={15} />
                   </button>
                 </div>
@@ -393,20 +394,20 @@ const ClientProfile = ({
                 </div>
               </div>
             </div>
-            <div className="mt-4 md:mt-0 md:ml-auto flex flex-wrap gap-3">
+            <div className="mt-4 lg:mt-0 lg:ml-auto flex flex-wrap gap-3">
               {clientData.phone && (
-                <a href={`tel:${clientData.phone}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50">
+                <a href={`tel:${clientData.phone}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 touch:min-h-11 [overflow-wrap:anywhere]">
                   <PhoneIcon size={16} className="mr-2 text-gray-500" />
                   {formatPhone(clientData.phone)}
                 </a>
               )}
               {clientData.client_email && (
-                <a href={`mailto:${clientData.client_email}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50">
+                <a href={`mailto:${clientData.client_email}`} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 touch:min-h-11 [overflow-wrap:anywhere]">
                   <MailIcon size={16} className="mr-2 text-gray-500" />
                   {clientData.client_email}
                 </a>
               )}
-              <button onClick={handleDeactivate} disabled={isDeactivating} className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-white bg-red-600 hover:bg-red-700 disabled:opacity-50">
+              <button onClick={handleDeactivate} disabled={isDeactivating} className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 touch:min-h-11">
                 {isDeactivating ? 'Deactivating...' : 'Deactivate Client'}
               </button>
             </div>
@@ -432,13 +433,11 @@ const ClientProfile = ({
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         {activeTab === 'overview' && <div className="space-y-6">
             <ClientWaiver clientId={clientData.id} />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="bg-white border border-gray-200 rounded-lg p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium">Sessions</h3>
-                  <button className="text-amber-600 text-sm hover:text-amber-800">
-                    <Link to={`/calendar`}>View Calendar</Link>
-                  </button>
+                  <Link to={`/calendar`} className="text-amber-600 text-sm hover:text-amber-800 touch:tap-target">View Calendar</Link>
                 </div>
                 <div className="space-y-4">
                   <div>
@@ -466,7 +465,7 @@ const ClientProfile = ({
                       client_email: clientData.client_email,
                     }}
                     trigger={
-                      <button type="button" className="w-full mt-2 py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 border border-amber-200 rounded-full">
+                      <button type="button" className="w-full mt-2 py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 border border-amber-200 rounded-full touch:min-h-11">
                         <PlusIcon size={16} className="mr-1" />
                         Schedule New Session
                       </button>
@@ -477,21 +476,21 @@ const ClientProfile = ({
               <div className="bg-white border border-gray-200 rounded-lg p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium">Goals</h3>
-                  <button onClick={() => setShowGoalInput(v => !v)} className="text-gray-400 hover:text-gray-600 rounded-full">
+                  <button aria-label="Add goal" onClick={() => setShowGoalInput(v => !v)} className="text-gray-400 hover:text-gray-600 rounded-full touch:tap-target">
                     <PlusIcon size={16} />
                   </button>
                 </div>
                 <div className="space-y-2">
                   {clientData.goals && clientData.goals.length > 0 ? (
                     clientData.goals.map((goal, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <div className="flex items-start">
+                      <div key={index} className="flex items-center justify-between gap-2">
+                        <div className="flex items-start min-w-0">
                           <div className="mt-0.5 mr-2 text-green-500">
                             <CircleSlash size={16} />
                           </div>
-                          <span className="text-sm">{goal}</span>
+                          <span className="text-sm min-w-0 break-words">{goal}</span>
                         </div>
-                        <button onClick={() => handleRemoveGoal(index)} className="text-gray-400 hover:text-red-500 rounded-full">
+                        <button aria-label={`Remove goal: ${goal}`} onClick={() => handleRemoveGoal(index)} className="flex-shrink-0 text-gray-400 hover:text-red-500 rounded-full touch:tap-target">
                           <Trash size={16} />
                         </button>
                       </div>
@@ -502,18 +501,18 @@ const ClientProfile = ({
                     </div>
                   )}
                   {showGoalInput && (
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
                       <input
                         type="text"
                         value={newGoal}
                         onChange={e => setNewGoal(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleAddGoal()}
                         placeholder="Add a goal..."
-                        className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="flex-1 min-w-0 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 touch:min-h-11 touch:basis-full touch:text-base"
                         autoFocus
                       />
-                      <button onClick={handleAddGoal} className="text-xs px-2 py-1 bg-amber-600 text-white rounded-full hover:bg-amber-700">Add</button>
-                      <button onClick={() => { setShowGoalInput(false); setNewGoal(''); }} className="text-xs px-2 py-1 border border-gray-300 rounded-full hover:bg-gray-50">Cancel</button>
+                      <button onClick={handleAddGoal} className="text-xs px-2 py-1 bg-amber-600 text-white rounded-full hover:bg-amber-700 touch:tap-target">Add</button>
+                      <button onClick={() => { setShowGoalInput(false); setNewGoal(''); }} className="text-xs px-2 py-1 border border-gray-300 rounded-full hover:bg-gray-50 touch:tap-target">Cancel</button>
                     </div>
                   )}
                 </div>
@@ -537,7 +536,7 @@ const ClientProfile = ({
                           </div>
                         )}
                         <button
-                          className="mt-4 w-full py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-full"
+                          className="mt-4 w-full py-2 flex items-center justify-center text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-full touch:min-h-11"
                           onClick={() => handleOpenProgramDetails(activeProgram)}
                         >
                           <ClipboardCheckIcon size={14} className="mr-1" />
@@ -558,20 +557,20 @@ const ClientProfile = ({
                             onChange={e => setNewProgramName(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && handleAddProgram()}
                             placeholder="Program name..."
-                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500"
+                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 touch:min-h-11 touch:text-base"
                             autoFocus
                           />
                           <div className="flex gap-2 justify-center">
-                            <button onClick={handleAddProgram} disabled={isAddingProgram} className="px-3 py-1.5 bg-amber-600 text-white text-xs font-medium rounded-full hover:bg-amber-700 disabled:opacity-50">
+                            <button onClick={handleAddProgram} disabled={isAddingProgram} className="px-3 py-1.5 bg-amber-600 text-white text-xs font-medium rounded-full hover:bg-amber-700 disabled:opacity-50 touch:tap-target">
                               {isAddingProgram ? 'Adding...' : 'Add'}
                             </button>
-                            <button onClick={() => { setShowAddProgram(false); setNewProgramName(''); }} className="px-3 py-1.5 border border-gray-300 text-xs rounded-full hover:bg-gray-50">
+                            <button onClick={() => { setShowAddProgram(false); setNewProgramName(''); }} className="px-3 py-1.5 border border-gray-300 text-xs rounded-full hover:bg-gray-50 touch:tap-target">
                               Cancel
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <button onClick={() => setShowAddProgram(true)} className="mt-3 inline-flex items-center px-3 py-1.5 text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-full">
+                        <button onClick={() => setShowAddProgram(true)} className="mt-3 inline-flex items-center px-3 py-1.5 text-sm text-amber-600 hover:text-amber-800 bg-amber-50 rounded-full touch:min-h-11">
                           <PlusIcon size={14} className="mr-1" />
                           Add Program
                         </button>
@@ -812,7 +811,7 @@ const ClientProfile = ({
       </div>
       {/* Program Details Popup */}
       {showProgramDetails && selectedProgram && <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[80vh] flex flex-col">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[80dvh] flex flex-col">
             <div className="p-4 border-b border-gray-200 flex justify-between items-center">
               <div className="flex items-center">
                 <div className={`p-2 rounded-md mr-3 ${selectedProgram.status === 'completed' ? 'bg-green-100' : selectedProgram.status === 'in-progress' ? 'bg-amber-100' : 'bg-yellow-100'}`}>
@@ -820,7 +819,7 @@ const ClientProfile = ({
                 </div>
                 <h3 className="text-lg font-medium">{selectedProgram.name}</h3>
               </div>
-              <button onClick={() => setShowProgramDetails(false)} className="p-2 rounded-full hover:bg-gray-100">
+              <button aria-label="Close" onClick={() => setShowProgramDetails(false)} className="p-2 rounded-full hover:bg-gray-100 touch:tap-target">
                 <XIcon size={20} className="text-gray-500" />
               </button>
             </div>
@@ -873,10 +872,10 @@ const ClientProfile = ({
               </div>
             </div>
             <div className="p-4 border-t border-gray-200 flex justify-end space-x-2">
-              <button onClick={() => setShowProgramDetails(false)} className="px-4 py-2 border border-gray-300 rounded-full text-sm font-medium text-gray-700">
+              <button onClick={() => setShowProgramDetails(false)} className="px-4 py-2 border border-gray-300 rounded-full text-sm font-medium text-gray-700 touch:min-h-11">
                 Close
               </button>
-              <button className="px-4 py-2 bg-amber-600 text-white rounded-full text-sm font-medium hover:bg-amber-700">
+              <button className="px-4 py-2 bg-amber-600 text-white rounded-full text-sm font-medium hover:bg-amber-700 touch:min-h-11">
                 Edit Program
               </button>
             </div>
