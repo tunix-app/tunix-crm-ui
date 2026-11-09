@@ -123,7 +123,7 @@ const Clients = () => {
       </div>
       {selectedClient ? <div className="flex-1 flex flex-col">
           <div className="mb-4">
-            <button onClick={() => setSelectedClient(null)} className="text-blue-600 font-medium text-sm flex items-center hover:text-blue-800">
+            <button onClick={() => setSelectedClient(null)} className="text-blue-600 font-medium text-sm flex items-center hover:text-blue-800 touch:min-h-11">
               <ChevronRightIcon size={16} className="transform rotate-180 mr-1" />
               Back to Clients
             </button>
@@ -132,22 +132,22 @@ const Clients = () => {
         </div> : <div className="bg-white rounded-lg shadow flex-1 flex flex-col">
           <div className="p-4 border-b border-gray-200 flex flex-wrap items-center justify-between gap-4">
             <div className="relative flex-1 max-w-md">
-              <input type="text" placeholder="Search clients..." value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" style={{ borderRadius: '24px' }} />
+              <input type="text" placeholder="Search clients..." value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent touch:min-h-11" style={{ borderRadius: '24px' }} />
               <SearchIcon size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
             <div className="flex items-center space-x-2">
               <div className="bg-gray-100 p-1 rounded-md flex" style={{ borderRadius: '24px' }}>
-                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'all' ? 'bg-white shadow' : ''}`} onClick={() => { setStatusFilter('all'); setCurrentPage(1); }}>
+                <Button className={`px-3 py-1 text-sm rounded-md touch:tap-target ${statusFilter === 'all' ? 'bg-white shadow' : ''}`} onClick={() => { setStatusFilter('all'); setCurrentPage(1); }}>
                   All
                 </Button>
-                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'active' ? 'bg-white shadow' : ''}`} onClick={() => { setStatusFilter('active'); setCurrentPage(1); }}>
+                <Button className={`px-3 py-1 text-sm rounded-md touch:tap-target ${statusFilter === 'active' ? 'bg-white shadow' : ''}`} onClick={() => { setStatusFilter('active'); setCurrentPage(1); }}>
                   Active
                 </Button>
-                <Button className={`px-3 py-1 text-sm rounded-md ${statusFilter === 'inactive' ? 'bg-white shadow' : ''}`} onClick={() => { setStatusFilter('inactive'); setCurrentPage(1); }}>
+                <Button className={`px-3 py-1 text-sm rounded-md touch:tap-target ${statusFilter === 'inactive' ? 'bg-white shadow' : ''}`} onClick={() => { setStatusFilter('inactive'); setCurrentPage(1); }}>
                   Inactive
                 </Button>
               </div>
-              <Button className="flex items-center px-3 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700" onClick={() => setShowAddClient(true)}>
+              <Button className="flex items-center px-3 py-2 bg-tan-600 text-white rounded-md text-sm font-medium hover:bg-tan-700 touch:h-11" onClick={() => setShowAddClient(true)}>
                 <PlusIcon size={16} className="mr-1" />
                 Add Client
               </Button>
@@ -238,8 +238,8 @@ const Clients = () => {
                         <td className={`px-6 py-4 text-sm text-gray-500 ${CONDENSED_COLUMN}`}>
                           <dl className="space-y-1 [overflow-wrap:anywhere]">
                             {[
-                              ['Last session', displayLastSession(client.last_session)],
-                              ['Next session', displayNextSession(client.next_session)],
+                              ['Last', displayLastSession(client.last_session)],
+                              ['Next', displayNextSession(client.next_session)],
                               ['Program', client.current_program_name || '-'],
                             ].map(([label, value]) => (
                               <div key={label}>
@@ -295,15 +295,16 @@ const Clients = () => {
             </div>
           </div>
           {!isLoading && filteredClients.length > 0 && (
-            <div className="px-6 py-3 border-t border-gray-200 flex items-center justify-between">
+            <div className="px-6 py-3 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm text-gray-500">
                 Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredClients.length)} of {filteredClients.length} clients
               </p>
-              <div className="flex items-center gap-1">
+              <div className="flex flex-wrap items-center gap-1">
                 <button
+                  aria-label="Previous page"
                   onClick={() => setCurrentPage(p => p - 1)}
                   disabled={currentPage === 1}
-                  className="p-1.5 rounded-full hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="p-1.5 rounded-full hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed touch:tap-target"
                 >
                   <ChevronLeftIcon size={16} />
                 </button>
@@ -311,15 +312,16 @@ const Clients = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`w-8 h-8 text-sm rounded-full ${page === currentPage ? 'bg-tan-600 text-white font-medium' : 'hover:bg-gray-100 text-gray-600'}`}
+                    className={`w-8 h-8 text-sm rounded-full touch:tap-target ${page === currentPage ? 'bg-tan-600 text-white font-medium' : 'hover:bg-gray-100 text-gray-600'}`}
                   >
                     {page}
                   </button>
                 ))}
                 <button
+                  aria-label="Next page"
                   onClick={() => setCurrentPage(p => p + 1)}
                   disabled={currentPage === totalPages}
-                  className="p-1.5 rounded-full hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="p-1.5 rounded-full hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed touch:tap-target"
                 >
                   <ChevronRightIcon size={16} />
                 </button>
@@ -328,11 +330,12 @@ const Clients = () => {
           )}
         </div>}
       {showAddClient && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
+        // The iPad keyboard doesn't resize fixed elements. The extra bottom padding gives the form room to scroll above it.
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 touch:overflow-y-auto touch:overscroll-contain touch:pb-[60vh]">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md m-auto">
             <div className="p-4 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-lg font-medium">Add New Client</h3>
-              <button onClick={() => { setShowAddClient(false); setAddClientError(null); }} className="p-1 rounded-full hover:bg-gray-100">
+              <button aria-label="Close" onClick={() => { setShowAddClient(false); setAddClientError(null); }} className="p-1 rounded-full hover:bg-gray-100 touch:tap-target">
                 <XIcon size={20} className="text-gray-500" />
               </button>
             </div>
@@ -340,26 +343,26 @@ const Clients = () => {
               {addClientError && <p className="text-sm text-red-600">{addClientError}</p>}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name <span className="text-red-500">*</span></label>
-                <input type="text" value={addClientForm.client_name} onChange={e => setAddClientForm(prev => ({ ...prev, client_name: e.target.value }))} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="John Doe" />
+                <input type="text" value={addClientForm.client_name} onChange={e => setAddClientForm(prev => ({ ...prev, client_name: e.target.value }))} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 touch:min-h-11 touch:text-base" placeholder="John Doe" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
-                <input type="email" value={addClientForm.client_email} onChange={e => setAddClientForm(prev => ({ ...prev, client_email: e.target.value }))} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="john@example.com" />
+                <input type="email" value={addClientForm.client_email} onChange={e => setAddClientForm(prev => ({ ...prev, client_email: e.target.value }))} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 touch:min-h-11 touch:text-base" placeholder="john@example.com" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                <input type="text" value={addClientForm.client_phone} onChange={e => setAddClientForm(prev => ({ ...prev, client_phone: e.target.value }))} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="+1-555-0100" />
+                <input type="text" value={addClientForm.client_phone} onChange={e => setAddClientForm(prev => ({ ...prev, client_phone: e.target.value }))} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 touch:min-h-11 touch:text-base" placeholder="+1-555-0100" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Goals <span className="text-gray-400 text-xs">(comma-separated)</span></label>
-                <input type="text" value={addClientForm.goals} onChange={e => setAddClientForm(prev => ({ ...prev, goals: e.target.value }))} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Lose weight, Build strength" />
+                <input type="text" value={addClientForm.goals} onChange={e => setAddClientForm(prev => ({ ...prev, goals: e.target.value }))} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 touch:min-h-11 touch:text-base" placeholder="Lose weight, Build strength" />
               </div>
             </div>
             <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
-              <button onClick={() => { setShowAddClient(false); setAddClientError(null); }} className="px-4 py-2 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50">
+              <button onClick={() => { setShowAddClient(false); setAddClientError(null); }} className="px-4 py-2 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 touch:min-h-11">
                 Cancel
               </button>
-              <button onClick={handleAddClientSubmit} disabled={isSubmitting} className="px-4 py-2 bg-tan-600 text-white rounded-full text-sm font-medium hover:bg-tan-700 disabled:opacity-50">
+              <button onClick={handleAddClientSubmit} disabled={isSubmitting} className="px-4 py-2 bg-tan-600 text-white rounded-full text-sm font-medium hover:bg-tan-700 disabled:opacity-50 touch:min-h-11">
                 {isSubmitting ? 'Adding...' : 'Add Client'}
               </button>
             </div>
