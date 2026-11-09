@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   content: [
   './index.html',
   './src/**/*.{js,ts,jsx,tsx}'
@@ -77,5 +80,20 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    ({ addVariant, addUtilities }) => {
+      // Touch sizing rule from the tablet spec: below xl, or when the primary pointer is coarse.
+      addVariant("touch", "@media (max-width: 1279.98px), (pointer: coarse)");
+      addUtilities({
+        ".tap-target": {
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minWidth: "44px",
+          minHeight: "44px",
+        },
+      });
+    },
+  ],
 }
