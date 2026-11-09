@@ -59,18 +59,19 @@ const ClientWaiver = ({ clientId }: ClientWaiverProps) => {
   };
 
   const handleViewWaiver = async (waiverId: string) => {
+    // Safari blocks tabs opened after an await, so the tab has to open during the tap.
+    const tab = window.open('', '_blank');
     try {
+      if (!tab) throw new Error('The browser blocked the new tab');
+      tab.opener = null;
       const signedUrl = await waiverApi.getSignedUrl(waiverId);
       const res = await fetch(signedUrl);
       const blob = await res.blob();
       const objectUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = objectUrl;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.click();
+      tab.location.href = objectUrl;
       setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
     } catch (err) {
+      tab?.close();
       console.error('Failed to get waiver URL:', err);
       alert('Failed to open waiver. Please try again.');
     }
@@ -105,7 +106,7 @@ const ClientWaiver = ({ clientId }: ClientWaiverProps) => {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-amber-600 rounded-full hover:bg-amber-700 disabled:opacity-50 flex-shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-amber-600 rounded-full hover:bg-amber-700 disabled:opacity-50 flex-shrink-0 touch:min-h-11"
           >
             <UploadIcon size={13} />
             {uploading ? 'Uploading...' : 'Upload Waiver'}
@@ -121,7 +122,7 @@ const ClientWaiver = ({ clientId }: ClientWaiverProps) => {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 disabled:opacity-50"
+              className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 disabled:opacity-50 touch:min-h-11"
             >
               <UploadIcon size={13} />
               {uploading ? 'Uploading...' : 'Upload another'}
@@ -132,15 +133,15 @@ const ClientWaiver = ({ clientId }: ClientWaiverProps) => {
               <li key={waiver.id} className="flex items-center gap-3 px-4 py-3">
                 <FileTextIcon size={18} className="text-gray-400 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">{waiver.fileName}</p>
+                  <p className="text-sm font-medium text-gray-800 truncate touch:whitespace-normal touch:break-words">{waiver.fileName}</p>
                   {formatDate(waiver.createdAt) && (
                     <p className="text-xs text-gray-400">{formatDate(waiver.createdAt)}</p>
                   )}
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="flex items-center gap-1 flex-shrink-0 touch:gap-3">
                   <button
                     onClick={() => handleViewWaiver(waiver.id)}
-                    className="p-1.5 text-gray-400 hover:text-amber-600 rounded-full"
+                    className="p-1.5 text-gray-400 hover:text-amber-600 rounded-full touch:tap-target"
                     title="View waiver"
                   >
                     <ExternalLinkIcon size={15} />
@@ -148,7 +149,7 @@ const ClientWaiver = ({ clientId }: ClientWaiverProps) => {
                   <button
                     onClick={() => handleDelete(waiver.id)}
                     disabled={deletingId === waiver.id}
-                    className="p-1.5 text-gray-400 hover:text-red-500 rounded-full disabled:opacity-50"
+                    className="p-1.5 text-gray-400 hover:text-red-500 rounded-full disabled:opacity-50 touch:tap-target"
                     title="Delete waiver"
                   >
                     <Trash2Icon size={15} />
